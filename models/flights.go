@@ -30,6 +30,7 @@ type Flight struct {
 	DestinationPoint     string      `boil:"destination_point" json:"destination_point" toml:"destination_point" yaml:"destination_point"`
 	DepartureTime        time.Time   `boil:"departure_time" json:"departure_time" toml:"departure_time" yaml:"departure_time"`
 	EstimatedArrivalTime time.Time   `boil:"estimated_arrival_time" json:"estimated_arrival_time" toml:"estimated_arrival_time" yaml:"estimated_arrival_time"`
+	AvailableSeats       int         `boil:"available_seats" json:"available_seats" toml:"available_seats" yaml:"available_seats"`
 	RealDepartureTime    null.Time   `boil:"real_departure_time" json:"real_departure_time,omitempty" toml:"real_departure_time" yaml:"real_departure_time,omitempty"`
 	RealArrivalTime      null.Time   `boil:"real_arrival_time" json:"real_arrival_time,omitempty" toml:"real_arrival_time" yaml:"real_arrival_time,omitempty"`
 	Status               string      `boil:"status" json:"status" toml:"status" yaml:"status"`
@@ -45,6 +46,7 @@ var FlightColumns = struct {
 	DestinationPoint     string
 	DepartureTime        string
 	EstimatedArrivalTime string
+	AvailableSeats       string
 	RealDepartureTime    string
 	RealArrivalTime      string
 	Status               string
@@ -55,6 +57,7 @@ var FlightColumns = struct {
 	DestinationPoint:     "destination_point",
 	DepartureTime:        "departure_time",
 	EstimatedArrivalTime: "estimated_arrival_time",
+	AvailableSeats:       "available_seats",
 	RealDepartureTime:    "real_departure_time",
 	RealArrivalTime:      "real_arrival_time",
 	Status:               "status",
@@ -67,6 +70,7 @@ var FlightTableColumns = struct {
 	DestinationPoint     string
 	DepartureTime        string
 	EstimatedArrivalTime string
+	AvailableSeats       string
 	RealDepartureTime    string
 	RealArrivalTime      string
 	Status               string
@@ -77,6 +81,7 @@ var FlightTableColumns = struct {
 	DestinationPoint:     "flights.destination_point",
 	DepartureTime:        "flights.departure_time",
 	EstimatedArrivalTime: "flights.estimated_arrival_time",
+	AvailableSeats:       "flights.available_seats",
 	RealDepartureTime:    "flights.real_departure_time",
 	RealArrivalTime:      "flights.real_arrival_time",
 	Status:               "flights.status",
@@ -166,6 +171,29 @@ func (w whereHelpertime_Time) GTE(x time.Time) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GTE, x)
 }
 
+type whereHelperint struct{ field string }
+
+func (w whereHelperint) EQ(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
+func (w whereHelperint) NEQ(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
+func (w whereHelperint) LT(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
+func (w whereHelperint) LTE(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
+func (w whereHelperint) GT(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
+func (w whereHelperint) GTE(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
+func (w whereHelperint) IN(slice []int) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
+}
+func (w whereHelperint) NIN(slice []int) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
+}
+
 type whereHelpernull_Time struct{ field string }
 
 func (w whereHelpernull_Time) EQ(x null.Time) qm.QueryMod {
@@ -197,6 +225,7 @@ var FlightWhere = struct {
 	DestinationPoint     whereHelperstring
 	DepartureTime        whereHelpertime_Time
 	EstimatedArrivalTime whereHelpertime_Time
+	AvailableSeats       whereHelperint
 	RealDepartureTime    whereHelpernull_Time
 	RealArrivalTime      whereHelpernull_Time
 	Status               whereHelperstring
@@ -207,6 +236,7 @@ var FlightWhere = struct {
 	DestinationPoint:     whereHelperstring{field: "\"flights\".\"destination_point\""},
 	DepartureTime:        whereHelpertime_Time{field: "\"flights\".\"departure_time\""},
 	EstimatedArrivalTime: whereHelpertime_Time{field: "\"flights\".\"estimated_arrival_time\""},
+	AvailableSeats:       whereHelperint{field: "\"flights\".\"available_seats\""},
 	RealDepartureTime:    whereHelpernull_Time{field: "\"flights\".\"real_departure_time\""},
 	RealArrivalTime:      whereHelpernull_Time{field: "\"flights\".\"real_arrival_time\""},
 	Status:               whereHelperstring{field: "\"flights\".\"status\""},
@@ -240,8 +270,8 @@ func (r *flightR) GetPlaneNumberPlane() *Plane {
 type flightL struct{}
 
 var (
-	flightAllColumns            = []string{"flight_id", "plane_number", "departure_point", "destination_point", "departure_time", "estimated_arrival_time", "real_departure_time", "real_arrival_time", "status"}
-	flightColumnsWithoutDefault = []string{"flight_id", "departure_point", "destination_point", "departure_time", "estimated_arrival_time", "status"}
+	flightAllColumns            = []string{"flight_id", "plane_number", "departure_point", "destination_point", "departure_time", "estimated_arrival_time", "available_seats", "real_departure_time", "real_arrival_time", "status"}
+	flightColumnsWithoutDefault = []string{"flight_id", "departure_point", "destination_point", "departure_time", "estimated_arrival_time", "available_seats", "status"}
 	flightColumnsWithDefault    = []string{"plane_number", "real_departure_time", "real_arrival_time"}
 	flightPrimaryKeyColumns     = []string{"flight_id"}
 	flightGeneratedColumns      = []string{}
