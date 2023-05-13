@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package planes;
+
+import "google/protobuf/empty.proto";
+
+option go_package = "pb/planes";
+
+message Plane {
+  string plane_id = 1;
+  string plane_number = 2;
+  int32 total_seats = 3;
+  string status = 4;
+}
+
+message PlaneList {
+  repeated Plane planes = 1;
+}
+
+message PlaneId {
+    string plane_id = 1;
+}
+
+service PlanesService {
+  rpc ListPlanes (google.protobuf.Empty) returns (PlaneList);
+  rpc AddOrUpdatePlane (Plane) returns (Plane);
+  rpc UpdatePlaneStatus (Plane) returns (google.protobuf.Empty);
+}
