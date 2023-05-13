@@ -439,7 +439,7 @@ func (planeL) LoadPlaneNumberFlights(ctx context.Context, e boil.ContextExecutor
 			}
 
 			for _, a := range args {
-				if queries.Equal(a, obj.PlaneNumber) {
+				if a == obj.PlaneNumber {
 					continue Outer
 				}
 			}
@@ -497,7 +497,7 @@ func (planeL) LoadPlaneNumberFlights(ctx context.Context, e boil.ContextExecutor
 
 	for _, foreign := range resultSlice {
 		for _, local := range slice {
-			if queries.Equal(local.PlaneNumber, foreign.PlaneNumber) {
+			if local.PlaneNumber == foreign.PlaneNumber {
 				local.R.PlaneNumberFlights = append(local.R.PlaneNumberFlights, foreign)
 				if foreign.R == nil {
 					foreign.R = &flightR{}
@@ -519,7 +519,7 @@ func (o *Plane) AddPlaneNumberFlights(ctx context.Context, exec boil.ContextExec
 	var err error
 	for _, rel := range related {
 		if insert {
-			queries.Assign(&rel.PlaneNumber, o.PlaneNumber)
+			rel.PlaneNumber = o.PlaneNumber
 			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
@@ -540,7 +540,7 @@ func (o *Plane) AddPlaneNumberFlights(ctx context.Context, exec boil.ContextExec
 				return errors.Wrap(err, "failed to update foreign table")
 			}
 
-			queries.Assign(&rel.PlaneNumber, o.PlaneNumber)
+			rel.PlaneNumber = o.PlaneNumber
 		}
 	}
 
@@ -561,80 +561,6 @@ func (o *Plane) AddPlaneNumberFlights(ctx context.Context, exec boil.ContextExec
 			rel.R.PlaneNumberPlane = o
 		}
 	}
-	return nil
-}
-
-// SetPlaneNumberFlights removes all previously related items of the
-// plane replacing them completely with the passed
-// in related items, optionally inserting them as new records.
-// Sets o.R.PlaneNumberPlane's PlaneNumberFlights accordingly.
-// Replaces o.R.PlaneNumberFlights with related.
-// Sets related.R.PlaneNumberPlane's PlaneNumberFlights accordingly.
-func (o *Plane) SetPlaneNumberFlights(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Flight) error {
-	query := "update \"flights\" set \"plane_number\" = null where \"plane_number\" = $1"
-	values := []interface{}{o.PlaneNumber}
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, query)
-		fmt.Fprintln(writer, values)
-	}
-	_, err := exec.ExecContext(ctx, query, values...)
-	if err != nil {
-		return errors.Wrap(err, "failed to remove relationships before set")
-	}
-
-	if o.R != nil {
-		for _, rel := range o.R.PlaneNumberFlights {
-			queries.SetScanner(&rel.PlaneNumber, nil)
-			if rel.R == nil {
-				continue
-			}
-
-			rel.R.PlaneNumberPlane = nil
-		}
-		o.R.PlaneNumberFlights = nil
-	}
-
-	return o.AddPlaneNumberFlights(ctx, exec, insert, related...)
-}
-
-// RemovePlaneNumberFlights relationships from objects passed in.
-// Removes related items from R.PlaneNumberFlights (uses pointer comparison, removal does not keep order)
-// Sets related.R.PlaneNumberPlane.
-func (o *Plane) RemovePlaneNumberFlights(ctx context.Context, exec boil.ContextExecutor, related ...*Flight) error {
-	if len(related) == 0 {
-		return nil
-	}
-
-	var err error
-	for _, rel := range related {
-		queries.SetScanner(&rel.PlaneNumber, nil)
-		if rel.R != nil {
-			rel.R.PlaneNumberPlane = nil
-		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("plane_number")); err != nil {
-			return err
-		}
-	}
-	if o.R == nil {
-		return nil
-	}
-
-	for _, rel := range related {
-		for i, ri := range o.R.PlaneNumberFlights {
-			if rel != ri {
-				continue
-			}
-
-			ln := len(o.R.PlaneNumberFlights)
-			if ln > 1 && i < ln-1 {
-				o.R.PlaneNumberFlights[i] = o.R.PlaneNumberFlights[ln-1]
-			}
-			o.R.PlaneNumberFlights = o.R.PlaneNumberFlights[:ln-1]
-			break
-		}
-	}
-
 	return nil
 }
 
