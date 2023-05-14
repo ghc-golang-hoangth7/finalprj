@@ -7,6 +7,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/lib/pq v1.10.9
 	github.com/volatiletech/null/v8 v8.1.2
+	github.com/volatiletech/sqlboiler v3.7.1+incompatible
 	github.com/volatiletech/sqlboiler/v4 v4.14.2
 	github.com/volatiletech/strmangle v0.0.4
 	google.golang.org/grpc v1.55.0
