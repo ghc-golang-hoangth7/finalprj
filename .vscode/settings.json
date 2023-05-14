@@ -1,9 +1,27 @@
 {
     "cSpell.words": [
+        "deleteall",
         "emptypb",
         "finalprj",
+        "fkey",
+        "friendsofgo",
+        "Helpernull",
+        "Helperstring",
+        "Helpertime",
+        "pkey",
         "planesmgr",
         "protoimpl",
-        "protoreflect"
+        "protoreflect",
+        "Ptrs",
+        "ptypes",
+        "qmhelper",
+        "refetches",
+        "Rels",
+        "sqlboiler",
+        "strmangle",
+        "timestamppb",
+        "upsert",
+        "vals",
+        "volatiletech"
     ]
 }

@@ -24,16 +24,16 @@ import (
 
 // Flight is an object representing the database table.
 type Flight struct {
-	FlightID             string      `boil:"flight_id" json:"flight_id" toml:"flight_id" yaml:"flight_id"`
-	PlaneNumber          null.String `boil:"plane_number" json:"plane_number,omitempty" toml:"plane_number" yaml:"plane_number,omitempty"`
-	DeparturePoint       string      `boil:"departure_point" json:"departure_point" toml:"departure_point" yaml:"departure_point"`
-	DestinationPoint     string      `boil:"destination_point" json:"destination_point" toml:"destination_point" yaml:"destination_point"`
-	DepartureTime        time.Time   `boil:"departure_time" json:"departure_time" toml:"departure_time" yaml:"departure_time"`
-	EstimatedArrivalTime time.Time   `boil:"estimated_arrival_time" json:"estimated_arrival_time" toml:"estimated_arrival_time" yaml:"estimated_arrival_time"`
-	AvailableSeats       int         `boil:"available_seats" json:"available_seats" toml:"available_seats" yaml:"available_seats"`
-	RealDepartureTime    null.Time   `boil:"real_departure_time" json:"real_departure_time,omitempty" toml:"real_departure_time" yaml:"real_departure_time,omitempty"`
-	RealArrivalTime      null.Time   `boil:"real_arrival_time" json:"real_arrival_time,omitempty" toml:"real_arrival_time" yaml:"real_arrival_time,omitempty"`
-	Status               string      `boil:"status" json:"status" toml:"status" yaml:"status"`
+	FlightID             string    `boil:"flight_id" json:"flight_id" toml:"flight_id" yaml:"flight_id"`
+	PlaneNumber          string    `boil:"plane_number" json:"plane_number" toml:"plane_number" yaml:"plane_number"`
+	DeparturePoint       string    `boil:"departure_point" json:"departure_point" toml:"departure_point" yaml:"departure_point"`
+	DestinationPoint     string    `boil:"destination_point" json:"destination_point" toml:"destination_point" yaml:"destination_point"`
+	DepartureTime        time.Time `boil:"departure_time" json:"departure_time" toml:"departure_time" yaml:"departure_time"`
+	EstimatedArrivalTime time.Time `boil:"estimated_arrival_time" json:"estimated_arrival_time" toml:"estimated_arrival_time" yaml:"estimated_arrival_time"`
+	AvailableSeats       int       `boil:"available_seats" json:"available_seats" toml:"available_seats" yaml:"available_seats"`
+	RealDepartureTime    null.Time `boil:"real_departure_time" json:"real_departure_time,omitempty" toml:"real_departure_time" yaml:"real_departure_time,omitempty"`
+	RealArrivalTime      null.Time `boil:"real_arrival_time" json:"real_arrival_time,omitempty" toml:"real_arrival_time" yaml:"real_arrival_time,omitempty"`
+	Status               string    `boil:"status" json:"status" toml:"status" yaml:"status"`
 
 	R *flightR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L flightL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -112,44 +112,6 @@ func (w whereHelperstring) NIN(slice []string) qm.QueryMod {
 	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
 }
 
-type whereHelpernull_String struct{ field string }
-
-func (w whereHelpernull_String) EQ(x null.String) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, false, x)
-}
-func (w whereHelpernull_String) NEQ(x null.String) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, true, x)
-}
-func (w whereHelpernull_String) LT(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpernull_String) LTE(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpernull_String) GT(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpernull_String) GTE(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
-func (w whereHelpernull_String) IN(slice []string) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
-}
-func (w whereHelpernull_String) NIN(slice []string) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
-}
-
-func (w whereHelpernull_String) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpernull_String) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
-
 type whereHelpertime_Time struct{ field string }
 
 func (w whereHelpertime_Time) EQ(x time.Time) qm.QueryMod {
@@ -220,7 +182,7 @@ func (w whereHelpernull_Time) IsNotNull() qm.QueryMod { return qmhelper.WhereIsN
 
 var FlightWhere = struct {
 	FlightID             whereHelperstring
-	PlaneNumber          whereHelpernull_String
+	PlaneNumber          whereHelperstring
 	DeparturePoint       whereHelperstring
 	DestinationPoint     whereHelperstring
 	DepartureTime        whereHelpertime_Time
@@ -231,7 +193,7 @@ var FlightWhere = struct {
 	Status               whereHelperstring
 }{
 	FlightID:             whereHelperstring{field: "\"flights\".\"flight_id\""},
-	PlaneNumber:          whereHelpernull_String{field: "\"flights\".\"plane_number\""},
+	PlaneNumber:          whereHelperstring{field: "\"flights\".\"plane_number\""},
 	DeparturePoint:       whereHelperstring{field: "\"flights\".\"departure_point\""},
 	DestinationPoint:     whereHelperstring{field: "\"flights\".\"destination_point\""},
 	DepartureTime:        whereHelpertime_Time{field: "\"flights\".\"departure_time\""},
@@ -271,8 +233,8 @@ type flightL struct{}
 
 var (
 	flightAllColumns            = []string{"flight_id", "plane_number", "departure_point", "destination_point", "departure_time", "estimated_arrival_time", "available_seats", "real_departure_time", "real_arrival_time", "status"}
-	flightColumnsWithoutDefault = []string{"flight_id", "departure_point", "destination_point", "departure_time", "estimated_arrival_time", "available_seats", "status"}
-	flightColumnsWithDefault    = []string{"plane_number", "real_departure_time", "real_arrival_time"}
+	flightColumnsWithoutDefault = []string{"flight_id", "plane_number", "departure_point", "destination_point", "departure_time", "estimated_arrival_time", "available_seats", "status"}
+	flightColumnsWithDefault    = []string{"real_departure_time", "real_arrival_time"}
 	flightPrimaryKeyColumns     = []string{"flight_id"}
 	flightGeneratedColumns      = []string{}
 )
@@ -599,9 +561,7 @@ func (flightL) LoadPlaneNumberPlane(ctx context.Context, e boil.ContextExecutor,
 		if object.R == nil {
 			object.R = &flightR{}
 		}
-		if !queries.IsNil(object.PlaneNumber) {
-			args = append(args, object.PlaneNumber)
-		}
+		args = append(args, object.PlaneNumber)
 
 	} else {
 	Outer:
@@ -611,14 +571,12 @@ func (flightL) LoadPlaneNumberPlane(ctx context.Context, e boil.ContextExecutor,
 			}
 
 			for _, a := range args {
-				if queries.Equal(a, obj.PlaneNumber) {
+				if a == obj.PlaneNumber {
 					continue Outer
 				}
 			}
 
-			if !queries.IsNil(obj.PlaneNumber) {
-				args = append(args, obj.PlaneNumber)
-			}
+			args = append(args, obj.PlaneNumber)
 
 		}
 	}
@@ -676,7 +634,7 @@ func (flightL) LoadPlaneNumberPlane(ctx context.Context, e boil.ContextExecutor,
 
 	for _, local := range slice {
 		for _, foreign := range resultSlice {
-			if queries.Equal(local.PlaneNumber, foreign.PlaneNumber) {
+			if local.PlaneNumber == foreign.PlaneNumber {
 				local.R.PlaneNumberPlane = foreign
 				if foreign.R == nil {
 					foreign.R = &planeR{}
@@ -717,7 +675,7 @@ func (o *Flight) SetPlaneNumberPlane(ctx context.Context, exec boil.ContextExecu
 		return errors.Wrap(err, "failed to update local table")
 	}
 
-	queries.Assign(&o.PlaneNumber, related.PlaneNumber)
+	o.PlaneNumber = related.PlaneNumber
 	if o.R == nil {
 		o.R = &flightR{
 			PlaneNumberPlane: related,
@@ -734,39 +692,6 @@ func (o *Flight) SetPlaneNumberPlane(ctx context.Context, exec boil.ContextExecu
 		related.R.PlaneNumberFlights = append(related.R.PlaneNumberFlights, o)
 	}
 
-	return nil
-}
-
-// RemovePlaneNumberPlane relationship.
-// Sets o.R.PlaneNumberPlane to nil.
-// Removes o from all passed in related items' relationships struct.
-func (o *Flight) RemovePlaneNumberPlane(ctx context.Context, exec boil.ContextExecutor, related *Plane) error {
-	var err error
-
-	queries.SetScanner(&o.PlaneNumber, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("plane_number")); err != nil {
-		return errors.Wrap(err, "failed to update local table")
-	}
-
-	if o.R != nil {
-		o.R.PlaneNumberPlane = nil
-	}
-	if related == nil || related.R == nil {
-		return nil
-	}
-
-	for i, ri := range related.R.PlaneNumberFlights {
-		if queries.Equal(o.PlaneNumber, ri.PlaneNumber) {
-			continue
-		}
-
-		ln := len(related.R.PlaneNumberFlights)
-		if ln > 1 && i < ln-1 {
-			related.R.PlaneNumberFlights[i] = related.R.PlaneNumberFlights[ln-1]
-		}
-		related.R.PlaneNumberFlights = related.R.PlaneNumberFlights[:ln-1]
-		break
-	}
 	return nil
 }
 

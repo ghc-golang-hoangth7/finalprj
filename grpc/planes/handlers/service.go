@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	// "github.com/ghc-golang-hoangth7/finalprj/models"
 	pb "github.com/ghc-golang-hoangth7/finalprj/pb/planes"
 )
 
