@@ -3,13 +3,17 @@ package handlers
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	// "github.com/ghc-golang-hoangth7/finalprj/models"
+	"github.com/ghc-golang-hoangth7/finalprj/models"
 	pb "github.com/ghc-golang-hoangth7/finalprj/pb/planes"
 )
 
@@ -22,32 +26,52 @@ func NewPlanesService(db *sql.DB) *PlanesService {
 	return &PlanesService{db: db}
 }
 
-func (s *PlanesService) ListPlanes(ctx context.Context, req *emptypb.Empty) (*pb.PlaneList, error) {
-	rows, err := s.db.Query("SELECT plane_id, plane_number, total_seats, status FROM planes;")
+func (s *PlanesService) ListPlanes(ctx context.Context, req *pb.Plane) (*pb.PlaneList, error) {
+	planes, err := models.Planes(
+		qm.Where("plane_id = ?", req.PlaneId),
+		qm.Where("plane_number = ?", req.PlaneNumber),
+		qm.Where("status = ?", req.Status),
+		qm.Where("total_seats <= ?", req.TotalSeats),
+	).All(ctx, s.db)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
-	var planes []*pb.Plane
-	for rows.Next() {
-		var plane pb.Plane
-		if err := rows.Scan(&plane.PlaneId, &plane.PlaneNumber, &plane.TotalSeats, &plane.Status); err != nil {
-			return nil, err
-		}
-		planes = append(planes, &plane)
+	planeList := &pb.PlaneList{}
+	for _, p := range planes {
+		plane := &pb.Plane{}
+		plane.FromModels(p)
+		planeList.Planes = append(planeList.Planes, plane)
 	}
 
-	return &pb.PlaneList{Planes: planes}, nil
+	fmt.Println("Found", len(planes), "planes")
+	return planeList, nil
 }
 
 func (s *PlanesService) UpdatePlaneStatus(ctx context.Context, req *pb.Plane) (*emptypb.Empty, error) {
 	// TODO: check scheduler
-	_, err := s.db.Exec("UPDATE planes SET status = $1 WHERE plane_id = $2;", req.Status, req.PlaneId)
+	// Get the plane by ID
+	plane, err := models.Planes(models.PlaneWhere.PlaneID.EQ(req.PlaneId)).One(ctx, s.db)
 	if err != nil {
-		return nil, err
+		if err == sql.ErrNoRows {
+			return nil, status.Errorf(codes.NotFound, "plane with ID %s not found", req.PlaneId)
+		}
+		return nil, status.Errorf(codes.Internal, "failed to get plane with ID %s: %v", req.PlaneId, err)
 	}
 
+	// Update the status of the plane
+	plane.Status = req.Status
+
+	// Save the updated plane to the database
+	_, err = plane.Update(ctx, s.db, boil.Infer())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to update plane with ID %s: %v", req.PlaneId, err)
+	}
+
+	protoPlane := &pb.Plane{}
+	protoPlane.FromModels(plane)
+
+	// Return a success response
 	return &emptypb.Empty{}, nil
 }
 
@@ -59,31 +83,26 @@ func (s *PlanesService) AddOrUpdatePlane(ctx context.Context, req *pb.Plane) (*p
 		return nil, status.Errorf(codes.InvalidArgument, "Invalid total seats")
 	}
 	if req.Status == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "Missing status")
+		req.Status = "ready"
 	}
-
-	// If the request doesn't have a plane_id, generate one
 	if req.PlaneId == "" {
 		req.PlaneId = uuid.New().String()
 	}
 
-	res, err := s.db.Exec("UPDATE planes SET plane_number = $1, total_seats = $2, status = $3 WHERE plane_id = $4 OR plane_number = $5", req.PlaneNumber, req.TotalSeats, req.Status, req.PlaneId, req.PlaneNumber)
+	// convert proto message to sqlboiler model
+	plane := &models.Plane{
+		PlaneNumber: req.PlaneNumber,
+		PlaneID:     req.PlaneId,
+		TotalSeats:  int(req.TotalSeats),
+		Status:      req.Status,
+	}
+
+	// insert to database
+	err := plane.Insert(ctx, s.db, boil.Infer())
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Failed to add or update plane: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to insert plane: %v", err)
 	}
 
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "Failed to get rows affected: %v", err)
-	}
-
-	// If no rows were affected, the plane wasn't found, so we insert a new one
-	if rowsAffected == 0 {
-		_, err := s.db.Exec("INSERT INTO planes (plane_id, plane_number, total_seats, status) VALUES ($1, $2, $3, $4)", req.PlaneId, req.PlaneNumber, req.TotalSeats, req.Status)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "Failed to add or update plane: %v", err)
-		}
-	}
-
+	// return the generated plane id
 	return req, nil
 }

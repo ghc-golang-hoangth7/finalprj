@@ -7,7 +7,6 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/protobuf/types/known/emptypb"
 
 	pb "github.com/ghc-golang-hoangth7/finalprj/pb/planes"
 	"github.com/google/uuid"
@@ -57,7 +56,9 @@ func addOrUpdatePlane(client pb.PlanesServiceClient, plane *pb.Plane) {
 func listPlanes(client pb.PlanesServiceClient) {
 	// List planes
 	fmt.Println("Viewing a list of planes...")
-	planes, err := client.ListPlanes(context.Background(), &emptypb.Empty{})
+	planes, err := client.ListPlanes(context.Background(), &pb.Plane{
+		PlaneNumber: "DEF123",
+	})
 	if err != nil {
 		log.Fatalf("Failed to list planes: %v", err)
 	}

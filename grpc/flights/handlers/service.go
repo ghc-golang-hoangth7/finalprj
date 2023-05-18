@@ -11,6 +11,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/ghc-golang-hoangth7/finalprj/models"
 	pb "github.com/ghc-golang-hoangth7/finalprj/pb/flights"
@@ -19,6 +20,10 @@ import (
 type FlightService struct {
 	pb.UnimplementedFlightServiceServer
 	db *sql.DB
+}
+
+func NewFlightService(db *sql.DB) *FlightService {
+	return &FlightService{db: db}
 }
 
 func (s *FlightService) CreateFlight(ctx context.Context, req *pb.Flight) (*pb.FlightId, error) {
@@ -84,35 +89,35 @@ func (s *FlightService) GetFlightById(ctx context.Context, req *pb.FlightId) (*p
 	return flight, nil
 }
 
-func (s *FlightService) BookFlight(ctx context.Context, req *pb.BookFlightRequest) error {
+func (s *FlightService) BookFlight(ctx context.Context, req *pb.BookFlightRequest) (*emptypb.Empty, error) {
 	// Retrieve the flight by ID
 	flight, err := models.FindFlight(ctx, s.db, req.FlightId)
 	if err != nil {
-		return status.Errorf(codes.Internal, "failed to retrieve flight: %v", err)
+		return &emptypb.Empty{}, status.Errorf(codes.Internal, "failed to retrieve flight: %v", err)
 	}
 
 	// Check if the flight is scheduled
 	if flight.Status != "scheduled" {
-		return status.Errorf(codes.FailedPrecondition, "flight is not scheduled")
+		return &emptypb.Empty{}, status.Errorf(codes.FailedPrecondition, "flight is not scheduled")
 	}
 
 	// Check if there are available seats
 	if flight.AvailableSeats == 0 {
-		return status.Errorf(codes.FailedPrecondition, "flight is fully booked")
+		return &emptypb.Empty{}, status.Errorf(codes.FailedPrecondition, "flight is fully booked")
 	}
 
 	// Check if the departure time is at least 45 minutes from now
 	if time.Until(flight.DepartureTime) <= 45*time.Minute {
-		return status.Errorf(codes.FailedPrecondition, "it is too late to book this flight")
+		return &emptypb.Empty{}, status.Errorf(codes.FailedPrecondition, "it is too late to book this flight")
 	}
 
 	// Decrease available seats by 1 and save the updated flight
 	flight.AvailableSeats -= int(req.SeatNumber)
 	if _, err := flight.Update(ctx, s.db, boil.Infer()); err != nil {
-		return status.Errorf(codes.Internal, "failed to update flight: %v", err)
+		return &emptypb.Empty{}, status.Errorf(codes.Internal, "failed to update flight: %v", err)
 	}
 
-	return nil
+	return &emptypb.Empty{}, nil
 }
 
 // ChangeFlightStatus updates the status of a flight by its ID

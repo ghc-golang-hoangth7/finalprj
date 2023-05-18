@@ -29,7 +29,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PlanesServiceClient interface {
-	ListPlanes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PlaneList, error)
+	ListPlanes(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*PlaneList, error)
 	AddOrUpdatePlane(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*Plane, error)
 	UpdatePlaneStatus(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
@@ -42,7 +42,7 @@ func NewPlanesServiceClient(cc grpc.ClientConnInterface) PlanesServiceClient {
 	return &planesServiceClient{cc}
 }
 
-func (c *planesServiceClient) ListPlanes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*PlaneList, error) {
+func (c *planesServiceClient) ListPlanes(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*PlaneList, error) {
 	out := new(PlaneList)
 	err := c.cc.Invoke(ctx, PlanesService_ListPlanes_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -73,7 +73,7 @@ func (c *planesServiceClient) UpdatePlaneStatus(ctx context.Context, in *Plane, 
 // All implementations must embed UnimplementedPlanesServiceServer
 // for forward compatibility
 type PlanesServiceServer interface {
-	ListPlanes(context.Context, *emptypb.Empty) (*PlaneList, error)
+	ListPlanes(context.Context, *Plane) (*PlaneList, error)
 	AddOrUpdatePlane(context.Context, *Plane) (*Plane, error)
 	UpdatePlaneStatus(context.Context, *Plane) (*emptypb.Empty, error)
 	mustEmbedUnimplementedPlanesServiceServer()
@@ -83,7 +83,7 @@ type PlanesServiceServer interface {
 type UnimplementedPlanesServiceServer struct {
 }
 
-func (UnimplementedPlanesServiceServer) ListPlanes(context.Context, *emptypb.Empty) (*PlaneList, error) {
+func (UnimplementedPlanesServiceServer) ListPlanes(context.Context, *Plane) (*PlaneList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPlanes not implemented")
 }
 func (UnimplementedPlanesServiceServer) AddOrUpdatePlane(context.Context, *Plane) (*Plane, error) {
@@ -106,7 +106,7 @@ func RegisterPlanesServiceServer(s grpc.ServiceRegistrar, srv PlanesServiceServe
 }
 
 func _PlanesService_ListPlanes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(Plane)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -118,7 +118,7 @@ func _PlanesService_ListPlanes_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: PlanesService_ListPlanes_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PlanesServiceServer).ListPlanes(ctx, req.(*emptypb.Empty))
+		return srv.(PlanesServiceServer).ListPlanes(ctx, req.(*Plane))
 	}
 	return interceptor(ctx, in, info, handler)
 }

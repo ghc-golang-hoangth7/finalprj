@@ -17,12 +17,8 @@ message PlaneList {
   repeated Plane planes = 1;
 }
 
-message PlaneId {
-    string plane_id = 1;
-}
-
 service PlanesService {
-  rpc ListPlanes (google.protobuf.Empty) returns (PlaneList);
+  rpc ListPlanes (Plane) returns (PlaneList);
   rpc AddOrUpdatePlane (Plane) returns (Plane);
   rpc UpdatePlaneStatus (Plane) returns (google.protobuf.Empty);
 }
