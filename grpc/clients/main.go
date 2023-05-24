@@ -4,16 +4,55 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
-	pb "github.com/ghc-golang-hoangth7/finalprj/pb/planes"
-	"github.com/google/uuid"
+	"github.com/ghc-golang-hoangth7/finalprj/pb/flights"
+	"github.com/ghc-golang-hoangth7/finalprj/pb/planes"
+	"github.com/ghc-golang-hoangth7/finalprj/utils"
 )
 
 func main() {
-	testPlanes()
+	// testPlanes()
+	testFlights()
+}
+
+func testFlights() {
+	// Connect to the gRPC server
+	conn, err := grpc.Dial("localhost:50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("Failed to connect to gRPC server: %v", err)
+	}
+	defer conn.Close()
+
+	// Create a new plane management client
+	client := flights.NewFlightServiceClient(conn)
+
+	flight := flights.Flight{
+		PlaneNumber:          "DEF123",
+		DeparturePoint:       "A",
+		DestinationPoint:     "B",
+		DepartureTime:        timestamppb.New(time.Now().AddDate(0, 0, 7)),
+		EstimatedArrivalTime: timestamppb.New(time.Now().AddDate(0, 0, 7).Add(4 * time.Hour)),
+		AvailableSeats:       400,
+	}
+
+	if id, err := client.CreateFlight(context.Background(), &flight); err != nil {
+		log.Fatal(err.Error())
+	} else {
+		flight.Id = id.Id
+		log.Printf("Flight created: \n%v", utils.ObjToString(flight.ToModels()))
+	}
+	if _, err := client.BookFlight(context.Background(), &flights.BookFlightRequest{
+		FlightId:   flight.Id,
+		SeatNumber: 4,
+	}); err != nil {
+		log.Fatal(err.Error())
+	}
 }
 
 func testPlanes() {
@@ -25,11 +64,11 @@ func testPlanes() {
 	defer conn.Close()
 
 	// Create a new plane management client
-	client := pb.NewPlanesServiceClient(conn)
+	client := planes.NewPlanesServiceClient(conn)
 
 	// Add or update a plane
 	planeId := uuid.New().String()
-	plane := &pb.Plane{
+	plane := &planes.Plane{
 		PlaneId:     planeId,
 		PlaneNumber: "DEF123",
 		TotalSeats:  240,
@@ -44,7 +83,7 @@ func testPlanes() {
 	updatePlaneStatus(client, planeId, "flying")
 }
 
-func addOrUpdatePlane(client pb.PlanesServiceClient, plane *pb.Plane) {
+func addOrUpdatePlane(client planes.PlanesServiceClient, plane *planes.Plane) {
 	// Add or update the plane
 	_, err := client.AddOrUpdatePlane(context.Background(), plane)
 	if err != nil {
@@ -53,10 +92,10 @@ func addOrUpdatePlane(client pb.PlanesServiceClient, plane *pb.Plane) {
 	fmt.Printf("Added or updated plane with ID: %s\n", plane.PlaneId)
 }
 
-func listPlanes(client pb.PlanesServiceClient) {
+func listPlanes(client planes.PlanesServiceClient) {
 	// List planes
 	fmt.Println("Viewing a list of planes...")
-	planes, err := client.ListPlanes(context.Background(), &pb.Plane{
+	planes, err := client.ListPlanes(context.Background(), &planes.Plane{
 		PlaneNumber: "DEF123",
 	})
 	if err != nil {
@@ -67,8 +106,8 @@ func listPlanes(client pb.PlanesServiceClient) {
 	}
 }
 
-func updatePlaneStatus(client pb.PlanesServiceClient, planeId string, status string) {
-	_, err := client.UpdatePlaneStatus(context.Background(), &pb.Plane{
+func updatePlaneStatus(client planes.PlanesServiceClient, planeId string, status string) {
+	_, err := client.UpdatePlaneStatus(context.Background(), &planes.Plane{
 		PlaneId: planeId,
 		Status:  status,
 	})

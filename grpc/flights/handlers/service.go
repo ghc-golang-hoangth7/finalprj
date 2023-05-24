@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"google.golang.org/grpc/codes"
@@ -28,8 +29,13 @@ func NewFlightService(db *sql.DB) *FlightService {
 
 func (s *FlightService) CreateFlight(ctx context.Context, req *pb.Flight) (*pb.FlightId, error) {
 	// TODO: get plane's info
+
+	if len(req.Id) == 0 {
+		req.Id = uuid.New().String()
+	}
 	// convert proto message to sqlboiler model
 	flight := &models.Flight{
+		FlightID:             req.Id,
 		PlaneNumber:          req.PlaneNumber,
 		DeparturePoint:       req.DeparturePoint,
 		DestinationPoint:     req.DestinationPoint,
@@ -40,6 +46,8 @@ func (s *FlightService) CreateFlight(ctx context.Context, req *pb.Flight) (*pb.F
 	}
 
 	// insert to database
+	boil.SetDB(s.db)
+	flight.Insert(ctx, boil.GetContextDB(), boil.Infer())
 	err := flight.Insert(ctx, s.db, boil.Infer())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to insert flight: %v", err)

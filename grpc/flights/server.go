@@ -34,13 +34,13 @@ func main() {
 	flightService := handlers.NewFlightService(db)
 
 	// Start a gRPC server on port 50051
-	listener, err := net.Listen("tcp", ":50051")
+	listener, err := net.Listen("tcp", ":50052")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	grpcServer := grpc.NewServer()
 	pb.RegisterFlightServiceServer(grpcServer, flightService)
-	log.Println("Server started at port :50051")
+	log.Println("Server started at port :50052")
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
