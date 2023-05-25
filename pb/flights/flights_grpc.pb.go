@@ -20,22 +20,22 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	FlightService_CreateFlight_FullMethodName       = "/flight.FlightService/CreateFlight"
+	FlightService_UpsertFlight_FullMethodName       = "/flight.FlightService/UpsertFlight"
 	FlightService_GetFlightsList_FullMethodName     = "/flight.FlightService/GetFlightsList"
 	FlightService_GetFlightById_FullMethodName      = "/flight.FlightService/GetFlightById"
-	FlightService_BookFlight_FullMethodName         = "/flight.FlightService/BookFlight"
 	FlightService_ChangeFlightStatus_FullMethodName = "/flight.FlightService/ChangeFlightStatus"
+	FlightService_BookFlight_FullMethodName         = "/flight.FlightService/BookFlight"
 )
 
 // FlightServiceClient is the client API for FlightService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FlightServiceClient interface {
-	CreateFlight(ctx context.Context, in *Flight, opts ...grpc.CallOption) (*FlightId, error)
+	UpsertFlight(ctx context.Context, in *Flight, opts ...grpc.CallOption) (*FlightId, error)
 	GetFlightsList(ctx context.Context, in *Flight, opts ...grpc.CallOption) (*FlightList, error)
 	GetFlightById(ctx context.Context, in *FlightId, opts ...grpc.CallOption) (*Flight, error)
+	ChangeFlightStatus(ctx context.Context, in *FlightStatusRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	BookFlight(ctx context.Context, in *BookFlightRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	ChangeFlightStatus(ctx context.Context, in *FlightStatusRequest, opts ...grpc.CallOption) (*Flight, error)
 }
 
 type flightServiceClient struct {
@@ -46,9 +46,9 @@ func NewFlightServiceClient(cc grpc.ClientConnInterface) FlightServiceClient {
 	return &flightServiceClient{cc}
 }
 
-func (c *flightServiceClient) CreateFlight(ctx context.Context, in *Flight, opts ...grpc.CallOption) (*FlightId, error) {
+func (c *flightServiceClient) UpsertFlight(ctx context.Context, in *Flight, opts ...grpc.CallOption) (*FlightId, error) {
 	out := new(FlightId)
-	err := c.cc.Invoke(ctx, FlightService_CreateFlight_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, FlightService_UpsertFlight_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -73,18 +73,18 @@ func (c *flightServiceClient) GetFlightById(ctx context.Context, in *FlightId, o
 	return out, nil
 }
 
-func (c *flightServiceClient) BookFlight(ctx context.Context, in *BookFlightRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *flightServiceClient) ChangeFlightStatus(ctx context.Context, in *FlightStatusRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, FlightService_BookFlight_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, FlightService_ChangeFlightStatus_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *flightServiceClient) ChangeFlightStatus(ctx context.Context, in *FlightStatusRequest, opts ...grpc.CallOption) (*Flight, error) {
-	out := new(Flight)
-	err := c.cc.Invoke(ctx, FlightService_ChangeFlightStatus_FullMethodName, in, out, opts...)
+func (c *flightServiceClient) BookFlight(ctx context.Context, in *BookFlightRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, FlightService_BookFlight_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -95,11 +95,11 @@ func (c *flightServiceClient) ChangeFlightStatus(ctx context.Context, in *Flight
 // All implementations must embed UnimplementedFlightServiceServer
 // for forward compatibility
 type FlightServiceServer interface {
-	CreateFlight(context.Context, *Flight) (*FlightId, error)
+	UpsertFlight(context.Context, *Flight) (*FlightId, error)
 	GetFlightsList(context.Context, *Flight) (*FlightList, error)
 	GetFlightById(context.Context, *FlightId) (*Flight, error)
+	ChangeFlightStatus(context.Context, *FlightStatusRequest) (*emptypb.Empty, error)
 	BookFlight(context.Context, *BookFlightRequest) (*emptypb.Empty, error)
-	ChangeFlightStatus(context.Context, *FlightStatusRequest) (*Flight, error)
 	mustEmbedUnimplementedFlightServiceServer()
 }
 
@@ -107,8 +107,8 @@ type FlightServiceServer interface {
 type UnimplementedFlightServiceServer struct {
 }
 
-func (UnimplementedFlightServiceServer) CreateFlight(context.Context, *Flight) (*FlightId, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateFlight not implemented")
+func (UnimplementedFlightServiceServer) UpsertFlight(context.Context, *Flight) (*FlightId, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpsertFlight not implemented")
 }
 func (UnimplementedFlightServiceServer) GetFlightsList(context.Context, *Flight) (*FlightList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFlightsList not implemented")
@@ -116,11 +116,11 @@ func (UnimplementedFlightServiceServer) GetFlightsList(context.Context, *Flight)
 func (UnimplementedFlightServiceServer) GetFlightById(context.Context, *FlightId) (*Flight, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFlightById not implemented")
 }
+func (UnimplementedFlightServiceServer) ChangeFlightStatus(context.Context, *FlightStatusRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangeFlightStatus not implemented")
+}
 func (UnimplementedFlightServiceServer) BookFlight(context.Context, *BookFlightRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BookFlight not implemented")
-}
-func (UnimplementedFlightServiceServer) ChangeFlightStatus(context.Context, *FlightStatusRequest) (*Flight, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ChangeFlightStatus not implemented")
 }
 func (UnimplementedFlightServiceServer) mustEmbedUnimplementedFlightServiceServer() {}
 
@@ -135,20 +135,20 @@ func RegisterFlightServiceServer(s grpc.ServiceRegistrar, srv FlightServiceServe
 	s.RegisterService(&FlightService_ServiceDesc, srv)
 }
 
-func _FlightService_CreateFlight_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _FlightService_UpsertFlight_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Flight)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FlightServiceServer).CreateFlight(ctx, in)
+		return srv.(FlightServiceServer).UpsertFlight(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FlightService_CreateFlight_FullMethodName,
+		FullMethod: FlightService_UpsertFlight_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FlightServiceServer).CreateFlight(ctx, req.(*Flight))
+		return srv.(FlightServiceServer).UpsertFlight(ctx, req.(*Flight))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -189,24 +189,6 @@ func _FlightService_GetFlightById_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FlightService_BookFlight_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BookFlightRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(FlightServiceServer).BookFlight(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: FlightService_BookFlight_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FlightServiceServer).BookFlight(ctx, req.(*BookFlightRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _FlightService_ChangeFlightStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FlightStatusRequest)
 	if err := dec(in); err != nil {
@@ -225,6 +207,24 @@ func _FlightService_ChangeFlightStatus_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FlightService_BookFlight_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BookFlightRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FlightServiceServer).BookFlight(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FlightService_BookFlight_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FlightServiceServer).BookFlight(ctx, req.(*BookFlightRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FlightService_ServiceDesc is the grpc.ServiceDesc for FlightService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -233,8 +233,8 @@ var FlightService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*FlightServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateFlight",
-			Handler:    _FlightService_CreateFlight_Handler,
+			MethodName: "UpsertFlight",
+			Handler:    _FlightService_UpsertFlight_Handler,
 		},
 		{
 			MethodName: "GetFlightsList",
@@ -245,12 +245,12 @@ var FlightService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _FlightService_GetFlightById_Handler,
 		},
 		{
-			MethodName: "BookFlight",
-			Handler:    _FlightService_BookFlight_Handler,
-		},
-		{
 			MethodName: "ChangeFlightStatus",
 			Handler:    _FlightService_ChangeFlightStatus_Handler,
+		},
+		{
+			MethodName: "BookFlight",
+			Handler:    _FlightService_BookFlight_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
