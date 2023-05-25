@@ -27,34 +27,26 @@ func NewFlightService(db *sql.DB) *FlightService {
 	return &FlightService{db: db}
 }
 
-func (s *FlightService) CreateFlight(ctx context.Context, req *pb.Flight) (*pb.FlightId, error) {
+func (s *FlightService) UpsertFlight(ctx context.Context, req *pb.Flight) (*pb.FlightId, error) {
+	boil.SetDB(s.db)
 	// TODO: get plane's info
 
 	if len(req.Id) == 0 {
 		req.Id = uuid.New().String()
-	}
-	// convert proto message to sqlboiler model
-	flight := &models.Flight{
-		FlightID:             req.Id,
-		PlaneNumber:          req.PlaneNumber,
-		DeparturePoint:       req.DeparturePoint,
-		DestinationPoint:     req.DestinationPoint,
-		DepartureTime:        req.DepartureTime.AsTime(),
-		EstimatedArrivalTime: req.EstimatedArrivalTime.AsTime(),
-		Status:               "scheduled",
-		AvailableSeats:       int(req.AvailableSeats),
-	}
 
-	// insert to database
-	boil.SetDB(s.db)
-	flight.Insert(ctx, boil.GetContextDB(), boil.Infer())
-	err := flight.Insert(ctx, s.db, boil.Infer())
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to insert flight: %v", err)
+		err := req.ToModels().Insert(ctx, boil.GetContextDB(), boil.Infer())
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to insert flight: %v", err)
+		}
+	} else {
+		_, err := req.ToModels().Update(ctx, boil.GetContextDB(), boil.Infer())
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to update flight: %v", err)
+		}
 	}
 
 	// return the generated flight id
-	return &pb.FlightId{Id: flight.FlightID}, nil
+	return &pb.FlightId{Id: req.Id}, nil
 }
 
 // GetFlightsList returns a list of flights based on the input query
@@ -129,14 +121,14 @@ func (s *FlightService) BookFlight(ctx context.Context, req *pb.BookFlightReques
 }
 
 // ChangeFlightStatus updates the status of a flight by its ID
-func (s *FlightService) ChangeFlightStatus(ctx context.Context, req *pb.FlightStatusRequest) (*pb.Flight, error) {
+func (s *FlightService) ChangeFlightStatus(ctx context.Context, req *pb.FlightStatusRequest) (*emptypb.Empty, error) {
 	// Get the flight by ID
 	flight, err := models.Flights(models.FlightWhere.FlightID.EQ(req.FlightId)).One(ctx, s.db)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, status.Errorf(codes.NotFound, "flight with ID %s not found", req.FlightId)
+			return &emptypb.Empty{}, status.Errorf(codes.NotFound, "flight with ID %s not found", req.FlightId)
 		}
-		return nil, status.Errorf(codes.Internal, "failed to get flight with ID %s: %v", req.FlightId, err)
+		return &emptypb.Empty{}, status.Errorf(codes.Internal, "failed to get flight with ID %s: %v", req.FlightId, err)
 	}
 
 	// Update the status of the flight
@@ -145,12 +137,9 @@ func (s *FlightService) ChangeFlightStatus(ctx context.Context, req *pb.FlightSt
 	// Save the updated flight to the database
 	_, err = flight.Update(ctx, s.db, boil.Infer())
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to update flight with ID %s: %v", req.FlightId, err)
+		return &emptypb.Empty{}, status.Errorf(codes.Internal, "failed to update flight with ID %s: %v", req.FlightId, err)
 	}
 
-	protoFlight := &pb.Flight{}
-	protoFlight.FromModels(flight)
-
 	// Return a success response
-	return protoFlight, nil
+	return &emptypb.Empty{}, nil
 }

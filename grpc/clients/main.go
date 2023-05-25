@@ -41,7 +41,7 @@ func testFlights() {
 		AvailableSeats:       400,
 	}
 
-	if id, err := client.CreateFlight(context.Background(), &flight); err != nil {
+	if id, err := client.UpsertFlight(context.Background(), &flight); err != nil {
 		log.Fatal(err.Error())
 	} else {
 		flight.Id = id.Id
@@ -85,7 +85,7 @@ func testPlanes() {
 
 func addOrUpdatePlane(client planes.PlanesServiceClient, plane *planes.Plane) {
 	// Add or update the plane
-	_, err := client.AddOrUpdatePlane(context.Background(), plane)
+	_, err := client.UpsertPlane(context.Background(), plane)
 	if err != nil {
 		log.Fatalf("Failed to add or update plane: %v", err)
 	}
@@ -95,7 +95,7 @@ func addOrUpdatePlane(client planes.PlanesServiceClient, plane *planes.Plane) {
 func listPlanes(client planes.PlanesServiceClient) {
 	// List planes
 	fmt.Println("Viewing a list of planes...")
-	planes, err := client.ListPlanes(context.Background(), &planes.Plane{
+	planes, err := client.GetPlanesList(context.Background(), &planes.Plane{
 		PlaneNumber: "DEF123",
 	})
 	if err != nil {
@@ -107,7 +107,7 @@ func listPlanes(client planes.PlanesServiceClient) {
 }
 
 func updatePlaneStatus(client planes.PlanesServiceClient, planeId string, status string) {
-	_, err := client.UpdatePlaneStatus(context.Background(), &planes.Plane{
+	_, err := client.ChangePlaneStatus(context.Background(), &planes.PlaneStatusRequest{
 		PlaneId: planeId,
 		Status:  status,
 	})

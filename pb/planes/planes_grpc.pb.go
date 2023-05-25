@@ -20,18 +20,20 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	PlanesService_ListPlanes_FullMethodName        = "/planes.PlanesService/ListPlanes"
-	PlanesService_AddOrUpdatePlane_FullMethodName  = "/planes.PlanesService/AddOrUpdatePlane"
-	PlanesService_UpdatePlaneStatus_FullMethodName = "/planes.PlanesService/UpdatePlaneStatus"
+	PlanesService_UpsertPlane_FullMethodName       = "/planes.PlanesService/UpsertPlane"
+	PlanesService_GetPlanesList_FullMethodName     = "/planes.PlanesService/GetPlanesList"
+	PlanesService_GetPlaneById_FullMethodName      = "/planes.PlanesService/GetPlaneById"
+	PlanesService_ChangePlaneStatus_FullMethodName = "/planes.PlanesService/ChangePlaneStatus"
 )
 
 // PlanesServiceClient is the client API for PlanesService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PlanesServiceClient interface {
-	ListPlanes(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*PlaneList, error)
-	AddOrUpdatePlane(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*Plane, error)
-	UpdatePlaneStatus(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	UpsertPlane(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*PlaneId, error)
+	GetPlanesList(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*PlaneList, error)
+	GetPlaneById(ctx context.Context, in *PlaneId, opts ...grpc.CallOption) (*Plane, error)
+	ChangePlaneStatus(ctx context.Context, in *PlaneStatusRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type planesServiceClient struct {
@@ -42,27 +44,36 @@ func NewPlanesServiceClient(cc grpc.ClientConnInterface) PlanesServiceClient {
 	return &planesServiceClient{cc}
 }
 
-func (c *planesServiceClient) ListPlanes(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*PlaneList, error) {
+func (c *planesServiceClient) UpsertPlane(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*PlaneId, error) {
+	out := new(PlaneId)
+	err := c.cc.Invoke(ctx, PlanesService_UpsertPlane_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *planesServiceClient) GetPlanesList(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*PlaneList, error) {
 	out := new(PlaneList)
-	err := c.cc.Invoke(ctx, PlanesService_ListPlanes_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, PlanesService_GetPlanesList_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *planesServiceClient) AddOrUpdatePlane(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*Plane, error) {
+func (c *planesServiceClient) GetPlaneById(ctx context.Context, in *PlaneId, opts ...grpc.CallOption) (*Plane, error) {
 	out := new(Plane)
-	err := c.cc.Invoke(ctx, PlanesService_AddOrUpdatePlane_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, PlanesService_GetPlaneById_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *planesServiceClient) UpdatePlaneStatus(ctx context.Context, in *Plane, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+func (c *planesServiceClient) ChangePlaneStatus(ctx context.Context, in *PlaneStatusRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, PlanesService_UpdatePlaneStatus_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, PlanesService_ChangePlaneStatus_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -73,9 +84,10 @@ func (c *planesServiceClient) UpdatePlaneStatus(ctx context.Context, in *Plane, 
 // All implementations must embed UnimplementedPlanesServiceServer
 // for forward compatibility
 type PlanesServiceServer interface {
-	ListPlanes(context.Context, *Plane) (*PlaneList, error)
-	AddOrUpdatePlane(context.Context, *Plane) (*Plane, error)
-	UpdatePlaneStatus(context.Context, *Plane) (*emptypb.Empty, error)
+	UpsertPlane(context.Context, *Plane) (*PlaneId, error)
+	GetPlanesList(context.Context, *Plane) (*PlaneList, error)
+	GetPlaneById(context.Context, *PlaneId) (*Plane, error)
+	ChangePlaneStatus(context.Context, *PlaneStatusRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedPlanesServiceServer()
 }
 
@@ -83,14 +95,17 @@ type PlanesServiceServer interface {
 type UnimplementedPlanesServiceServer struct {
 }
 
-func (UnimplementedPlanesServiceServer) ListPlanes(context.Context, *Plane) (*PlaneList, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListPlanes not implemented")
+func (UnimplementedPlanesServiceServer) UpsertPlane(context.Context, *Plane) (*PlaneId, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpsertPlane not implemented")
 }
-func (UnimplementedPlanesServiceServer) AddOrUpdatePlane(context.Context, *Plane) (*Plane, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddOrUpdatePlane not implemented")
+func (UnimplementedPlanesServiceServer) GetPlanesList(context.Context, *Plane) (*PlaneList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPlanesList not implemented")
 }
-func (UnimplementedPlanesServiceServer) UpdatePlaneStatus(context.Context, *Plane) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdatePlaneStatus not implemented")
+func (UnimplementedPlanesServiceServer) GetPlaneById(context.Context, *PlaneId) (*Plane, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPlaneById not implemented")
+}
+func (UnimplementedPlanesServiceServer) ChangePlaneStatus(context.Context, *PlaneStatusRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangePlaneStatus not implemented")
 }
 func (UnimplementedPlanesServiceServer) mustEmbedUnimplementedPlanesServiceServer() {}
 
@@ -105,56 +120,74 @@ func RegisterPlanesServiceServer(s grpc.ServiceRegistrar, srv PlanesServiceServe
 	s.RegisterService(&PlanesService_ServiceDesc, srv)
 }
 
-func _PlanesService_ListPlanes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PlanesService_UpsertPlane_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Plane)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PlanesServiceServer).ListPlanes(ctx, in)
+		return srv.(PlanesServiceServer).UpsertPlane(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: PlanesService_ListPlanes_FullMethodName,
+		FullMethod: PlanesService_UpsertPlane_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PlanesServiceServer).ListPlanes(ctx, req.(*Plane))
+		return srv.(PlanesServiceServer).UpsertPlane(ctx, req.(*Plane))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PlanesService_AddOrUpdatePlane_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PlanesService_GetPlanesList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Plane)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PlanesServiceServer).AddOrUpdatePlane(ctx, in)
+		return srv.(PlanesServiceServer).GetPlanesList(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: PlanesService_AddOrUpdatePlane_FullMethodName,
+		FullMethod: PlanesService_GetPlanesList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PlanesServiceServer).AddOrUpdatePlane(ctx, req.(*Plane))
+		return srv.(PlanesServiceServer).GetPlanesList(ctx, req.(*Plane))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _PlanesService_UpdatePlaneStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Plane)
+func _PlanesService_GetPlaneById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PlaneId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PlanesServiceServer).UpdatePlaneStatus(ctx, in)
+		return srv.(PlanesServiceServer).GetPlaneById(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: PlanesService_UpdatePlaneStatus_FullMethodName,
+		FullMethod: PlanesService_GetPlaneById_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PlanesServiceServer).UpdatePlaneStatus(ctx, req.(*Plane))
+		return srv.(PlanesServiceServer).GetPlaneById(ctx, req.(*PlaneId))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PlanesService_ChangePlaneStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PlaneStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PlanesServiceServer).ChangePlaneStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PlanesService_ChangePlaneStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PlanesServiceServer).ChangePlaneStatus(ctx, req.(*PlaneStatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -167,16 +200,20 @@ var PlanesService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*PlanesServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ListPlanes",
-			Handler:    _PlanesService_ListPlanes_Handler,
+			MethodName: "UpsertPlane",
+			Handler:    _PlanesService_UpsertPlane_Handler,
 		},
 		{
-			MethodName: "AddOrUpdatePlane",
-			Handler:    _PlanesService_AddOrUpdatePlane_Handler,
+			MethodName: "GetPlanesList",
+			Handler:    _PlanesService_GetPlanesList_Handler,
 		},
 		{
-			MethodName: "UpdatePlaneStatus",
-			Handler:    _PlanesService_UpdatePlaneStatus_Handler,
+			MethodName: "GetPlaneById",
+			Handler:    _PlanesService_GetPlaneById_Handler,
+		},
+		{
+			MethodName: "ChangePlaneStatus",
+			Handler:    _PlanesService_ChangePlaneStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

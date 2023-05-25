@@ -13,12 +13,22 @@ message Plane {
   string status = 4;
 }
 
+message PlaneId {
+  string id = 1;
+}
+
 message PlaneList {
   repeated Plane planes = 1;
 }
 
+message PlaneStatusRequest {
+  string plane_id = 1;
+  string status = 2;
+}
+
 service PlanesService {
-  rpc ListPlanes (Plane) returns (PlaneList);
-  rpc AddOrUpdatePlane (Plane) returns (Plane);
-  rpc UpdatePlaneStatus (Plane) returns (google.protobuf.Empty);
+  rpc UpsertPlane (Plane) returns (PlaneId);
+  rpc GetPlanesList (Plane) returns (PlaneList);
+  rpc GetPlaneById(PlaneId) returns (Plane);
+  rpc ChangePlaneStatus (PlaneStatusRequest) returns (google.protobuf.Empty);
 }

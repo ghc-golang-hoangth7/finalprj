@@ -24,9 +24,8 @@ message FlightId {
   string id = 1;
 }
 
-message BookFlightRequest {
-  string flight_id = 1;
-  int32 seat_number = 2;
+message FlightList {
+  repeated Flight flights = 1;
 }
 
 message FlightStatusRequest {
@@ -34,14 +33,15 @@ message FlightStatusRequest {
   string status = 2;
 }
 
-message FlightList {
-  repeated Flight flights = 1;
+message BookFlightRequest {
+  string flight_id = 1;
+  int32 seat_number = 2;
 }
 
 service FlightService {
-  rpc CreateFlight(Flight) returns (FlightId);
+  rpc UpsertFlight(Flight) returns (FlightId);
   rpc GetFlightsList(Flight) returns (FlightList);
   rpc GetFlightById(FlightId) returns (Flight);
+  rpc ChangeFlightStatus(FlightStatusRequest) returns (google.protobuf.Empty);
   rpc BookFlight(BookFlightRequest) returns (google.protobuf.Empty);
-  rpc ChangeFlightStatus(FlightStatusRequest) returns (Flight);
 }
