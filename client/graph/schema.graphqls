@@ -1,0 +1,95 @@
+scalar Time
+
+type Plane {
+  plane_id: String!
+  plane_number: String!
+  total_seats: Int!
+  status: String!
+}
+
+type PlaneId {
+  id: String!
+}
+
+type PlaneList {
+  planes: [Plane!]!
+}
+
+input PlaneInput {
+  plane_id: String!
+  plane_number: String!
+  total_seats: Int!
+  status: String!
+}
+
+input PlaneIdInput {
+  id: String!
+}
+
+input PlaneStatusInput {
+  plane_id: String!
+  status: String!
+}
+
+type Flight {
+  id: String!
+  plane_number: String!
+  departure_point: String!
+  destination_point: String!
+  departure_time: Time!
+  estimated_arrival_time: Time!
+  real_departure_time: Time!
+  real_arrival_time: Time!
+  status: String!
+  available_seats: Int!
+}
+
+type FlightId {
+  id: String!
+}
+
+type FlightList {
+  flights: [Flight!]!
+}
+
+input FlightInput {
+  id: String!
+  plane_number: String!
+  departure_point: String!
+  destination_point: String!
+  departure_time: Time!
+  estimated_arrival_time: Time!
+  real_departure_time: Time!
+  real_arrival_time: Time!
+  status: String!
+  available_seats: Int!
+}
+
+input FlightIdInput {
+  id: String!
+}
+
+input FlightStatusInput {
+  flight_id: String!
+  status: String!
+}
+
+input BookFlightInput {
+  flight_id: String!
+  seat_number: Int!
+}
+
+type Query {
+  getPlanesList(plane: PlaneInput): PlaneList!
+  getPlaneById(id: String!): Plane!
+  getFlightsList(flight: FlightInput): FlightList!
+  getFlightById(id: String!): Flight!
+}
+
+type Mutation {
+  upsertPlane(plane: PlaneInput!): PlaneId!
+  changePlaneStatus(input: PlaneStatusInput!): Boolean!
+  upsertFlight(flight: FlightInput!): FlightId!
+  changeFlightStatus(input: FlightStatusInput!): Boolean!
+  bookFlight(input: BookFlightInput!): Boolean!
+}
