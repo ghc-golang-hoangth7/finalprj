@@ -24,67 +24,67 @@ import (
 
 // Flight is an object representing the database table.
 type Flight struct {
-	FlightID             string    `boil:"flight_id" json:"flight_id" toml:"flight_id" yaml:"flight_id"`
-	PlaneNumber          string    `boil:"plane_number" json:"plane_number" toml:"plane_number" yaml:"plane_number"`
-	DeparturePoint       string    `boil:"departure_point" json:"departure_point" toml:"departure_point" yaml:"departure_point"`
-	DestinationPoint     string    `boil:"destination_point" json:"destination_point" toml:"destination_point" yaml:"destination_point"`
-	DepartureTime        time.Time `boil:"departure_time" json:"departure_time" toml:"departure_time" yaml:"departure_time"`
-	EstimatedArrivalTime time.Time `boil:"estimated_arrival_time" json:"estimated_arrival_time" toml:"estimated_arrival_time" yaml:"estimated_arrival_time"`
-	AvailableSeats       int       `boil:"available_seats" json:"available_seats" toml:"available_seats" yaml:"available_seats"`
-	RealDepartureTime    null.Time `boil:"real_departure_time" json:"real_departure_time,omitempty" toml:"real_departure_time" yaml:"real_departure_time,omitempty"`
-	RealArrivalTime      null.Time `boil:"real_arrival_time" json:"real_arrival_time,omitempty" toml:"real_arrival_time" yaml:"real_arrival_time,omitempty"`
-	Status               string    `boil:"status" json:"status" toml:"status" yaml:"status"`
+	FlightID               string    `boil:"flight_id" json:"flight_id" toml:"flight_id" yaml:"flight_id"`
+	PlaneNumber            string    `boil:"plane_number" json:"plane_number" toml:"plane_number" yaml:"plane_number"`
+	DeparturePoint         string    `boil:"departure_point" json:"departure_point" toml:"departure_point" yaml:"departure_point"`
+	DestinationPoint       string    `boil:"destination_point" json:"destination_point" toml:"destination_point" yaml:"destination_point"`
+	ScheduledDepartureTime time.Time `boil:"scheduled_departure_time" json:"scheduled_departure_time" toml:"scheduled_departure_time" yaml:"scheduled_departure_time"`
+	EstimatedArrivalTime   time.Time `boil:"estimated_arrival_time" json:"estimated_arrival_time" toml:"estimated_arrival_time" yaml:"estimated_arrival_time"`
+	AvailableSeats         int       `boil:"available_seats" json:"available_seats" toml:"available_seats" yaml:"available_seats"`
+	RealDepartureTime      null.Time `boil:"real_departure_time" json:"real_departure_time,omitempty" toml:"real_departure_time" yaml:"real_departure_time,omitempty"`
+	RealArrivalTime        null.Time `boil:"real_arrival_time" json:"real_arrival_time,omitempty" toml:"real_arrival_time" yaml:"real_arrival_time,omitempty"`
+	Status                 string    `boil:"status" json:"status" toml:"status" yaml:"status"`
 
 	R *flightR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L flightL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var FlightColumns = struct {
-	FlightID             string
-	PlaneNumber          string
-	DeparturePoint       string
-	DestinationPoint     string
-	DepartureTime        string
-	EstimatedArrivalTime string
-	AvailableSeats       string
-	RealDepartureTime    string
-	RealArrivalTime      string
-	Status               string
+	FlightID               string
+	PlaneNumber            string
+	DeparturePoint         string
+	DestinationPoint       string
+	ScheduledDepartureTime string
+	EstimatedArrivalTime   string
+	AvailableSeats         string
+	RealDepartureTime      string
+	RealArrivalTime        string
+	Status                 string
 }{
-	FlightID:             "flight_id",
-	PlaneNumber:          "plane_number",
-	DeparturePoint:       "departure_point",
-	DestinationPoint:     "destination_point",
-	DepartureTime:        "departure_time",
-	EstimatedArrivalTime: "estimated_arrival_time",
-	AvailableSeats:       "available_seats",
-	RealDepartureTime:    "real_departure_time",
-	RealArrivalTime:      "real_arrival_time",
-	Status:               "status",
+	FlightID:               "flight_id",
+	PlaneNumber:            "plane_number",
+	DeparturePoint:         "departure_point",
+	DestinationPoint:       "destination_point",
+	ScheduledDepartureTime: "scheduled_departure_time",
+	EstimatedArrivalTime:   "estimated_arrival_time",
+	AvailableSeats:         "available_seats",
+	RealDepartureTime:      "real_departure_time",
+	RealArrivalTime:        "real_arrival_time",
+	Status:                 "status",
 }
 
 var FlightTableColumns = struct {
-	FlightID             string
-	PlaneNumber          string
-	DeparturePoint       string
-	DestinationPoint     string
-	DepartureTime        string
-	EstimatedArrivalTime string
-	AvailableSeats       string
-	RealDepartureTime    string
-	RealArrivalTime      string
-	Status               string
+	FlightID               string
+	PlaneNumber            string
+	DeparturePoint         string
+	DestinationPoint       string
+	ScheduledDepartureTime string
+	EstimatedArrivalTime   string
+	AvailableSeats         string
+	RealDepartureTime      string
+	RealArrivalTime        string
+	Status                 string
 }{
-	FlightID:             "flights.flight_id",
-	PlaneNumber:          "flights.plane_number",
-	DeparturePoint:       "flights.departure_point",
-	DestinationPoint:     "flights.destination_point",
-	DepartureTime:        "flights.departure_time",
-	EstimatedArrivalTime: "flights.estimated_arrival_time",
-	AvailableSeats:       "flights.available_seats",
-	RealDepartureTime:    "flights.real_departure_time",
-	RealArrivalTime:      "flights.real_arrival_time",
-	Status:               "flights.status",
+	FlightID:               "flights.flight_id",
+	PlaneNumber:            "flights.plane_number",
+	DeparturePoint:         "flights.departure_point",
+	DestinationPoint:       "flights.destination_point",
+	ScheduledDepartureTime: "flights.scheduled_departure_time",
+	EstimatedArrivalTime:   "flights.estimated_arrival_time",
+	AvailableSeats:         "flights.available_seats",
+	RealDepartureTime:      "flights.real_departure_time",
+	RealArrivalTime:        "flights.real_arrival_time",
+	Status:                 "flights.status",
 }
 
 // Generated where
@@ -181,27 +181,27 @@ func (w whereHelpernull_Time) IsNull() qm.QueryMod    { return qmhelper.WhereIsN
 func (w whereHelpernull_Time) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
 
 var FlightWhere = struct {
-	FlightID             whereHelperstring
-	PlaneNumber          whereHelperstring
-	DeparturePoint       whereHelperstring
-	DestinationPoint     whereHelperstring
-	DepartureTime        whereHelpertime_Time
-	EstimatedArrivalTime whereHelpertime_Time
-	AvailableSeats       whereHelperint
-	RealDepartureTime    whereHelpernull_Time
-	RealArrivalTime      whereHelpernull_Time
-	Status               whereHelperstring
+	FlightID               whereHelperstring
+	PlaneNumber            whereHelperstring
+	DeparturePoint         whereHelperstring
+	DestinationPoint       whereHelperstring
+	ScheduledDepartureTime whereHelpertime_Time
+	EstimatedArrivalTime   whereHelpertime_Time
+	AvailableSeats         whereHelperint
+	RealDepartureTime      whereHelpernull_Time
+	RealArrivalTime        whereHelpernull_Time
+	Status                 whereHelperstring
 }{
-	FlightID:             whereHelperstring{field: "\"flights\".\"flight_id\""},
-	PlaneNumber:          whereHelperstring{field: "\"flights\".\"plane_number\""},
-	DeparturePoint:       whereHelperstring{field: "\"flights\".\"departure_point\""},
-	DestinationPoint:     whereHelperstring{field: "\"flights\".\"destination_point\""},
-	DepartureTime:        whereHelpertime_Time{field: "\"flights\".\"departure_time\""},
-	EstimatedArrivalTime: whereHelpertime_Time{field: "\"flights\".\"estimated_arrival_time\""},
-	AvailableSeats:       whereHelperint{field: "\"flights\".\"available_seats\""},
-	RealDepartureTime:    whereHelpernull_Time{field: "\"flights\".\"real_departure_time\""},
-	RealArrivalTime:      whereHelpernull_Time{field: "\"flights\".\"real_arrival_time\""},
-	Status:               whereHelperstring{field: "\"flights\".\"status\""},
+	FlightID:               whereHelperstring{field: "\"flights\".\"flight_id\""},
+	PlaneNumber:            whereHelperstring{field: "\"flights\".\"plane_number\""},
+	DeparturePoint:         whereHelperstring{field: "\"flights\".\"departure_point\""},
+	DestinationPoint:       whereHelperstring{field: "\"flights\".\"destination_point\""},
+	ScheduledDepartureTime: whereHelpertime_Time{field: "\"flights\".\"scheduled_departure_time\""},
+	EstimatedArrivalTime:   whereHelpertime_Time{field: "\"flights\".\"estimated_arrival_time\""},
+	AvailableSeats:         whereHelperint{field: "\"flights\".\"available_seats\""},
+	RealDepartureTime:      whereHelpernull_Time{field: "\"flights\".\"real_departure_time\""},
+	RealArrivalTime:        whereHelpernull_Time{field: "\"flights\".\"real_arrival_time\""},
+	Status:                 whereHelperstring{field: "\"flights\".\"status\""},
 }
 
 // FlightRels is where relationship names are stored.
@@ -232,8 +232,8 @@ func (r *flightR) GetPlaneNumberPlane() *Plane {
 type flightL struct{}
 
 var (
-	flightAllColumns            = []string{"flight_id", "plane_number", "departure_point", "destination_point", "departure_time", "estimated_arrival_time", "available_seats", "real_departure_time", "real_arrival_time", "status"}
-	flightColumnsWithoutDefault = []string{"flight_id", "plane_number", "departure_point", "destination_point", "departure_time", "estimated_arrival_time", "available_seats", "status"}
+	flightAllColumns            = []string{"flight_id", "plane_number", "departure_point", "destination_point", "scheduled_departure_time", "estimated_arrival_time", "available_seats", "real_departure_time", "real_arrival_time", "status"}
+	flightColumnsWithoutDefault = []string{"flight_id", "plane_number", "departure_point", "destination_point", "scheduled_departure_time", "estimated_arrival_time", "available_seats", "status"}
 	flightColumnsWithDefault    = []string{"real_departure_time", "real_arrival_time"}
 	flightPrimaryKeyColumns     = []string{"flight_id"}
 	flightGeneratedColumns      = []string{}
