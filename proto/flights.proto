@@ -47,7 +47,7 @@ message FlightStatusRequest {
 
 message BookFlightRequest {
   string flight_id = 1;
-  int32 seat_number = 2;
+  int32 number_of_seats = 2;
 }
 
 service FlightService {

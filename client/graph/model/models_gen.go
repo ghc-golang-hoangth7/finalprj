@@ -7,8 +7,8 @@ import (
 )
 
 type BookFlightInput struct {
-	FlightID   string `json:"flight_id"`
-	SeatNumber int    `json:"seat_number"`
+	FlightID      string `json:"flight_id"`
+	NumberOfSeats int    `json:"number_of_seats"`
 }
 
 type Flight struct {

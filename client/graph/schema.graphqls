@@ -91,7 +91,7 @@ input FlightStatusInput {
 
 input BookFlightInput {
   flight_id: String!
-  seat_number: Int!
+  number_of_seats: Int!
 }
 
 type Query {

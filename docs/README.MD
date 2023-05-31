@@ -5,8 +5,7 @@
 > - Trước khi đặt chỗ cần kiểm tra xem máy bay còn chỗ hay không
 > - Người dùng có thể search chuyến bay theo giờ, theo địa điểm (bao gồm điểm đi và điểm đến)
 > - Người dùng muốn biết có các chuyến bay nào hợp lệ và trống bao nhiêu ghế
-> - Có thể làm thêm việc quản lý vị trí các ghế nếu muốn (không bắt buộc)
-> - Khi người dùng đặt chỗ thì chuyến bay đó sẽ giảm 1 chỗ trống
+> - Khi người dùng đặt chỗ thì chuyến bay đó sẽ giảm ~~1 chỗ trống~~ => cho tùy chỉnh số ghế muốn đặt
 > - Người dùng chỉ có thể đặt chỗ trước ít nhất 45 phút khi máy bay khởi hành
 
 > #### Là người quản lý lên lịch các chuyến bay, người dùng mong muốn

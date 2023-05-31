@@ -3912,7 +3912,7 @@ func (ec *executionContext) unmarshalInputBookFlightInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"flight_id", "seat_number"}
+	fieldsInOrder := [...]string{"flight_id", "number_of_seats"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -3928,15 +3928,15 @@ func (ec *executionContext) unmarshalInputBookFlightInput(ctx context.Context, o
 				return it, err
 			}
 			it.FlightID = data
-		case "seat_number":
+		case "number_of_seats":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("seat_number"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("number_of_seats"))
 			data, err := ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.SeatNumber = data
+			it.NumberOfSeats = data
 		}
 	}
 

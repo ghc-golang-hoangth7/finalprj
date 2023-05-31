@@ -35,7 +35,6 @@ func NewFlightService(db *sql.DB, planeSrv pbPlanes.PlanesServiceClient) *Flight
 }
 
 func (s *FlightService) UpsertFlight(ctx context.Context, req *pb.Flight) (*pb.FlightId, error) {
-	// TODO: get plane's info
 	pbPlane, err := s.planesSrv.GetPlaneByNumber(ctx, &pbPlanes.PlaneNumber{
 		PlaneNumber: req.PlaneNumber,
 	})
@@ -179,7 +178,7 @@ func (s *FlightService) BookFlight(ctx context.Context, req *pb.BookFlightReques
 	}
 
 	// Decrease available seats by 1 and save the updated flight
-	flight.AvailableSeats -= int(req.SeatNumber)
+	flight.AvailableSeats -= int(req.NumberOfSeats)
 	if _, err := flight.Update(ctx, s.db, boil.Infer()); err != nil {
 		return &emptypb.Empty{}, status.Errorf(codes.Internal, "failed to update flight: %v", err)
 	}

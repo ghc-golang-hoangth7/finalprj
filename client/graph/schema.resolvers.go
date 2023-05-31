@@ -104,8 +104,8 @@ func (r *mutationResolver) ChangeFlightStatus(ctx context.Context, input model.F
 func (r *mutationResolver) BookFlight(ctx context.Context, input model.BookFlightInput) (bool, error) {
 	// Prepare the request to book a flight
 	bookFlightReq := &pbFlights.BookFlightRequest{
-		FlightId:   input.FlightID,
-		SeatNumber: int32(input.SeatNumber),
+		FlightId:      input.FlightID,
+		NumberOfSeats: int32(input.NumberOfSeats),
 	}
 
 	// Make the gRPC request to book a flight
