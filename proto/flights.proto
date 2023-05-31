@@ -31,7 +31,7 @@ message FlightQuery {
   string destination_point = 4;
   google.protobuf.Timestamp scheduled_departure_time_from = 5;
   google.protobuf.Timestamp scheduled_departure_time_to = 6;
-  string status = 7;
+  repeated string status = 7;
   int32 available_seats_from = 8;
   int32 available_seats_to = 9;
 }

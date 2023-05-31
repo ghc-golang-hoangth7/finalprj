@@ -2,8 +2,8 @@ package model
 
 import (
 	pbFlights "github.com/ghc-golang-hoangth7/finalprj/pb/flights"
+	pbPlanes "github.com/ghc-golang-hoangth7/finalprj/pb/planes"
 	"github.com/golang/protobuf/ptypes/timestamp"
-	// pbPlanes "github.com/ghc-golang-hoangth7/finalprj/pb/planes"
 )
 
 func (flight *Flight) FromProto(pb *pbFlights.Flight) {
@@ -34,6 +34,9 @@ func (flight *Flight) FromProto(pb *pbFlights.Flight) {
 
 func (flight *FlightQuery) ToProto() *pbFlights.FlightQuery {
 	pb := &pbFlights.FlightQuery{}
+	if flight == nil {
+		return pb
+	}
 	if flight.ID != nil {
 		pb.Id = *flight.ID
 	}
@@ -53,13 +56,42 @@ func (flight *FlightQuery) ToProto() *pbFlights.FlightQuery {
 		pb.ScheduledDepartureTimeTo = &timestamp.Timestamp{Seconds: flight.ScheduledDepartureTimeTo.Unix()}
 	}
 	if flight.Status != nil {
-		pb.Status = *flight.Status
+		pb.Status = []string{}
+		for _, v := range flight.Status {
+			pb.Status = append(pb.Status, *v)
+		}
 	}
 	if flight.AvailableSeatsFrom != nil {
 		pb.AvailableSeatsFrom = int32(*flight.AvailableSeatsFrom)
 	}
 	if flight.AvailableSeatsTo != nil {
 		pb.AvailableSeatsTo = int32(*flight.AvailableSeatsTo)
+	}
+	return pb
+}
+
+func (plane *PlaneQuery) ToProto() *pbPlanes.PlaneQuery {
+	pb := &pbPlanes.PlaneQuery{}
+	if plane == nil {
+		return pb
+	}
+	if plane.PlaneID != nil {
+		pb.PlaneId = *plane.PlaneID
+	}
+	if plane.PlaneNumber != nil {
+		pb.PlaneNumber = *plane.PlaneNumber
+	}
+	if plane.TotalSeatsFrom != nil {
+		pb.TotalSeatsFrom = int32(*plane.TotalSeatsFrom)
+	}
+	if plane.TotalSeatsTo != nil {
+		pb.TotalSeatsTo = int32(*plane.TotalSeatsTo)
+	}
+	if plane.Status != nil {
+		pb.Status = []string{}
+		for _, v := range plane.Status {
+			pb.Status = append(pb.Status, *v)
+		}
 	}
 	return pb
 }

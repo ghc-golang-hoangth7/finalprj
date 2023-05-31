@@ -10,6 +10,7 @@ import (
 
 	"github.com/ghc-golang-hoangth7/finalprj/grpc/flights/handlers"
 	pb "github.com/ghc-golang-hoangth7/finalprj/pb/flights"
+	pbPlanes "github.com/ghc-golang-hoangth7/finalprj/pb/planes"
 )
 
 // Db connection info
@@ -30,8 +31,14 @@ func main() {
 	}
 	defer db.Close()
 
+	planesConn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer planesConn.Close()
+
 	// Create a new flight service instance
-	flightService := handlers.NewFlightService(db)
+	flightService := handlers.NewFlightService(db, pbPlanes.NewPlanesServiceClient(planesConn))
 
 	// Start a gRPC server on port 50051
 	listener, err := net.Listen("tcp", ":50052")

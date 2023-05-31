@@ -20,11 +20,11 @@ input PlaneQuery {
   plane_number: String
   total_seats_from: Int
   total_seats_to: Int
-  status: String
+  status: [String]
 }
 
 input PlaneInput {
-  plane_id: String!
+  plane_id: String
   plane_number: String!
   total_seats: Int!
   status: String!
@@ -67,13 +67,13 @@ input FlightQuery {
   destination_point: String
   scheduled_departure_time_from: Time
   scheduled_departure_time_to: Time
-  status: String
+  status: [String]
   available_seats_from: Int
   available_seats_to: Int
 }
 
 input FlightInput {
-  id: String!
+  id: String
   plane_number: String!
   departure_point: String!
   destination_point: String!

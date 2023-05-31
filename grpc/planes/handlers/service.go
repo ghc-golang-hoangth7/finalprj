@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/google/uuid"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -13,7 +14,6 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	// "github.com/ghc-golang-hoangth7/finalprj/models"
 	"github.com/ghc-golang-hoangth7/finalprj/models"
 	pbFlights "github.com/ghc-golang-hoangth7/finalprj/pb/flights"
 	pb "github.com/ghc-golang-hoangth7/finalprj/pb/planes"
@@ -21,12 +21,15 @@ import (
 
 type PlanesService struct {
 	pb.UnimplementedPlanesServiceServer
-	FlightsService pbFlights.FlightServiceClient
-	db             *sql.DB
+	flightsSrv pbFlights.FlightServiceClient
+	db         *sql.DB
 }
 
-func NewPlanesService(db *sql.DB) *PlanesService {
-	return &PlanesService{db: db}
+func NewPlanesService(db *sql.DB, flightsSrv pbFlights.FlightServiceClient) *PlanesService {
+	boil.SetDB(db)
+	boil.DebugMode = true
+	boil.DebugWriter = os.Stdout
+	return &PlanesService{db: db, flightsSrv: flightsSrv}
 }
 
 func (s *PlanesService) UpsertPlane(ctx context.Context, req *pb.Plane) (*pb.PlaneId, error) {
@@ -53,7 +56,7 @@ func (s *PlanesService) UpsertPlane(ctx context.Context, req *pb.Plane) (*pb.Pla
 
 	//TODO: update plane
 	// insert to database
-	err := plane.Insert(ctx, s.db, boil.Infer())
+	err := plane.Insert(ctx, boil.GetContextDB(), boil.Infer())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to insert plane: %v", err)
 	}
@@ -74,7 +77,7 @@ func (s *PlanesService) GetPlanesList(ctx context.Context, req *pb.PlaneQuery) (
 	}
 
 	if len(req.Status) > 0 {
-		queries = append(queries, qm.Where("status = ?", req.Status))
+		queries = append(queries, qm.Where("status IN ?", req.Status))
 	}
 	if req.TotalSeatsFrom > 0 {
 		queries = append(queries, qm.Where("total_seats >= ?", req.TotalSeatsFrom))
@@ -83,7 +86,7 @@ func (s *PlanesService) GetPlanesList(ctx context.Context, req *pb.PlaneQuery) (
 		queries = append(queries, qm.Where("total_seats <= ?", req.TotalSeatsTo))
 	}
 
-	planes, err := models.Planes(queries...).All(ctx, s.db)
+	planes, err := models.Planes(queries...).All(ctx, boil.GetContextDB())
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +104,7 @@ func (s *PlanesService) GetPlanesList(ctx context.Context, req *pb.PlaneQuery) (
 
 func (s *PlanesService) GetPlaneById(ctx context.Context, req *pb.PlaneId) (*pb.Plane, error) {
 	// Get plane from database using sqlboiler
-	planeModel, err := models.FindPlane(ctx, s.db, req.Id)
+	planeModel, err := models.FindPlane(ctx, boil.GetContextDB(), req.Id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, status.Errorf(codes.NotFound, "Plane with ID %s not found", req.Id)
@@ -136,7 +139,7 @@ func (s *PlanesService) GetPlaneByNumber(ctx context.Context, req *pb.PlaneNumbe
 func (s *PlanesService) ChangePlaneStatus(ctx context.Context, req *pb.PlaneStatusRequest) (*emptypb.Empty, error) {
 	// TODO: check scheduler
 	// Get the plane by ID
-	plane, err := models.Planes(models.PlaneWhere.PlaneID.EQ(req.PlaneId)).One(ctx, s.db)
+	plane, err := models.Planes(models.PlaneWhere.PlaneID.EQ(req.PlaneId)).One(ctx, boil.GetContextDB())
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, status.Errorf(codes.NotFound, "plane with ID %s not found", req.PlaneId)
@@ -148,7 +151,7 @@ func (s *PlanesService) ChangePlaneStatus(ctx context.Context, req *pb.PlaneStat
 	plane.Status = req.Status
 
 	// Save the updated plane to the database
-	_, err = plane.Update(ctx, s.db, boil.Infer())
+	_, err = plane.Update(ctx, boil.GetContextDB(), boil.Infer())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update plane with ID %s: %v", req.PlaneId, err)
 	}

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,6 +14,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/ghc-golang-hoangth7/finalprj/models"
 	pb "github.com/ghc-golang-hoangth7/finalprj/pb/flights"
@@ -21,18 +23,20 @@ import (
 
 type FlightService struct {
 	pb.UnimplementedFlightServiceServer
-	PlanesService pbPlanes.PlanesServiceClient
-	db            *sql.DB
+	planesSrv pbPlanes.PlanesServiceClient
+	db        *sql.DB
 }
 
-func NewFlightService(db *sql.DB) *FlightService {
-	return &FlightService{db: db}
+func NewFlightService(db *sql.DB, planeSrv pbPlanes.PlanesServiceClient) *FlightService {
+	boil.SetDB(db)
+	boil.DebugMode = true
+	boil.DebugWriter = os.Stdout
+	return &FlightService{db: db, planesSrv: planeSrv}
 }
 
 func (s *FlightService) UpsertFlight(ctx context.Context, req *pb.Flight) (*pb.FlightId, error) {
-	boil.SetDB(s.db)
 	// TODO: get plane's info
-	pbPlane, err := s.PlanesService.GetPlaneByNumber(ctx, &pbPlanes.PlaneNumber{
+	pbPlane, err := s.planesSrv.GetPlaneByNumber(ctx, &pbPlanes.PlaneNumber{
 		PlaneNumber: req.PlaneNumber,
 	})
 	if err != nil {
@@ -44,6 +48,19 @@ func (s *FlightService) UpsertFlight(ctx context.Context, req *pb.Flight) (*pb.F
 		if req.ScheduledDepartureTime.AsTime().Before(time.Now().AddDate(0, 0, 7)) {
 			return nil, status.Errorf(codes.InvalidArgument, "Flight must be scheduled at least a week before departure time")
 		}
+
+		// In a 24-hour period, only 1 flight is scheduled for a plane
+		if fls, err := s.GetFlightsList(ctx, &pb.FlightQuery{
+			PlaneNumber:                req.PlaneNumber,
+			Status:                     []string{"scheduled"},
+			ScheduledDepartureTimeFrom: timestamppb.New(req.ScheduledDepartureTime.AsTime().Add(-12 * time.Hour)),
+			ScheduledDepartureTimeTo:   timestamppb.New(req.ScheduledDepartureTime.AsTime().Add(12 * time.Hour)),
+		}); err != nil {
+			return nil, status.Errorf(codes.Internal, err.Error())
+		} else if len(fls.Flights) > 0 {
+			return nil, status.Errorf(codes.InvalidArgument, "A flight is scheduled for '%v' in '%v'", req.PlaneNumber, fls.Flights[0].ScheduledDepartureTime)
+		}
+
 		req.Status = "scheduled"
 		req.AvailableSeats = pbPlane.TotalSeats - 15
 		req.RealArrivalTime = nil
@@ -54,10 +71,15 @@ func (s *FlightService) UpsertFlight(ctx context.Context, req *pb.Flight) (*pb.F
 			return nil, status.Errorf(codes.Internal, "failed to insert flight: %v", err)
 		}
 	} else {
-		_, err := req.ToModels().Update(ctx, boil.GetContextDB(), boil.Infer())
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to update flight: %v", err)
-		}
+		// current, err := models.FindFlight(ctx, s.db, req.Id)
+		// if err != nil {
+		// 	if errors.Is(err, sql.ErrNoRows) {
+		// 		return nil, status.Errorf(codes.NotFound, "Flight with ID %s not found", req.Id)
+		// 	}
+		// 	return nil, status.Errorf(codes.Internal, "Failed to get flight from database: %v", err)
+		// }
+		// _, err := req.ToModels().Update(ctx, boil.GetContextDB(), boil.Infer())
+		return nil, status.Errorf(codes.Unimplemented, "flight are not updatable at this time")
 	}
 
 	// return the generated flight id
@@ -86,7 +108,11 @@ func (s *FlightService) GetFlightsList(ctx context.Context, req *pb.FlightQuery)
 		queries = append(queries, qm.Where("scheduled_departure_time <= ?", req.ScheduledDepartureTimeTo.AsTime()))
 	}
 	if len(req.Status) > 0 {
-		queries = append(queries, qm.Where("status = ?", req.Status))
+		args := []interface{}{}
+		for _, status := range req.Status {
+			args = append(args, status)
+		}
+		queries = append(queries, qm.AndIn("status IN ?", args...))
 	}
 	if req.AvailableSeatsFrom > 0 {
 		queries = append(queries, qm.Where("available_seats >= ?", req.AvailableSeatsFrom))

@@ -17,10 +17,12 @@ import (
 func (r *mutationResolver) UpsertPlane(ctx context.Context, plane model.PlaneInput) (*model.PlaneID, error) {
 	// Prepare the request to upsert a plane
 	planeReq := &pbPlanes.Plane{
-		PlaneId:     plane.PlaneID,
 		PlaneNumber: plane.PlaneNumber,
 		TotalSeats:  int32(plane.TotalSeats),
 		Status:      plane.Status,
+	}
+	if plane.PlaneID != nil {
+		planeReq.PlaneId = *plane.PlaneID
 	}
 
 	// Make the gRPC request to upsert a plane
@@ -58,11 +60,13 @@ func (r *mutationResolver) ChangePlaneStatus(ctx context.Context, input model.Pl
 func (r *mutationResolver) UpsertFlight(ctx context.Context, flight model.FlightInput) (*model.FlightID, error) {
 	// Prepare the request to upsert a flight
 	flightReq := &pbFlights.Flight{
-		Id:                     flight.ID,
 		PlaneNumber:            flight.PlaneNumber,
 		DeparturePoint:         flight.DeparturePoint,
 		DestinationPoint:       flight.DestinationPoint,
 		ScheduledDepartureTime: &timestamp.Timestamp{Seconds: flight.ScheduledDepartureTime.Unix()},
+	}
+	if flight.ID != nil {
+		flightReq.Id = *flight.ID
 	}
 
 	// Make the gRPC request to upsert a flight
@@ -115,25 +119,8 @@ func (r *mutationResolver) BookFlight(ctx context.Context, input model.BookFligh
 
 // GetPlanesList is the resolver for the getPlanesList field.
 func (r *queryResolver) GetPlanesList(ctx context.Context, plane *model.PlaneQuery) (*model.PlaneList, error) {
-	planesReq := &pbPlanes.PlaneQuery{}
-	if plane.PlaneID != nil {
-		planesReq.PlaneId = *plane.PlaneID
-	}
-	if plane.PlaneNumber != nil {
-		planesReq.PlaneNumber = *plane.PlaneNumber
-	}
-	if plane.TotalSeatsFrom != nil {
-		planesReq.TotalSeatsFrom = int32(*plane.TotalSeatsFrom)
-	}
-	if plane.TotalSeatsTo != nil {
-		planesReq.TotalSeatsTo = int32(*plane.TotalSeatsTo)
-	}
-	if plane.Status != nil {
-		planesReq.Status = *plane.Status
-	}
-
 	// Make the gRPC request to get planes list
-	planesListRes, err := r.PlanesService.GetPlanesList(ctx, planesReq)
+	planesListRes, err := r.PlanesService.GetPlanesList(ctx, plane.ToProto())
 	if err != nil {
 		return nil, err
 	}
@@ -176,7 +163,6 @@ func (r *queryResolver) GetPlaneByID(ctx context.Context, id string) (*model.Pla
 
 // GetFlightsList is the resolver for the getFlightsList field.
 func (r *queryResolver) GetFlightsList(ctx context.Context, flight *model.FlightQuery) (*model.FlightList, error) {
-
 	// Make the gRPC request to get flights list
 	flightsListRes, err := r.FlightsService.GetFlightsList(ctx, flight.ToProto())
 	if err != nil {

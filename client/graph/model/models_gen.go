@@ -33,7 +33,7 @@ type FlightIDInput struct {
 }
 
 type FlightInput struct {
-	ID                     string    `json:"id"`
+	ID                     *string   `json:"id,omitempty"`
 	PlaneNumber            string    `json:"plane_number"`
 	DeparturePoint         string    `json:"departure_point"`
 	DestinationPoint       string    `json:"destination_point"`
@@ -51,7 +51,7 @@ type FlightQuery struct {
 	DestinationPoint           *string    `json:"destination_point,omitempty"`
 	ScheduledDepartureTimeFrom *time.Time `json:"scheduled_departure_time_from,omitempty"`
 	ScheduledDepartureTimeTo   *time.Time `json:"scheduled_departure_time_to,omitempty"`
-	Status                     *string    `json:"status,omitempty"`
+	Status                     []*string  `json:"status,omitempty"`
 	AvailableSeatsFrom         *int       `json:"available_seats_from,omitempty"`
 	AvailableSeatsTo           *int       `json:"available_seats_to,omitempty"`
 }
@@ -77,10 +77,10 @@ type PlaneIDInput struct {
 }
 
 type PlaneInput struct {
-	PlaneID     string `json:"plane_id"`
-	PlaneNumber string `json:"plane_number"`
-	TotalSeats  int    `json:"total_seats"`
-	Status      string `json:"status"`
+	PlaneID     *string `json:"plane_id,omitempty"`
+	PlaneNumber string  `json:"plane_number"`
+	TotalSeats  int     `json:"total_seats"`
+	Status      string  `json:"status"`
 }
 
 type PlaneList struct {
@@ -88,11 +88,11 @@ type PlaneList struct {
 }
 
 type PlaneQuery struct {
-	PlaneID        *string `json:"plane_id,omitempty"`
-	PlaneNumber    *string `json:"plane_number,omitempty"`
-	TotalSeatsFrom *int    `json:"total_seats_from,omitempty"`
-	TotalSeatsTo   *int    `json:"total_seats_to,omitempty"`
-	Status         *string `json:"status,omitempty"`
+	PlaneID        *string   `json:"plane_id,omitempty"`
+	PlaneNumber    *string   `json:"plane_number,omitempty"`
+	TotalSeatsFrom *int      `json:"total_seats_from,omitempty"`
+	TotalSeatsTo   *int      `json:"total_seats_to,omitempty"`
+	Status         []*string `json:"status,omitempty"`
 }
 
 type PlaneStatusInput struct {

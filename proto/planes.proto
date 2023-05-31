@@ -26,7 +26,7 @@ message PlaneQuery {
   string plane_number = 2;
   int32 total_seats_from = 3;
   int32 total_seats_to = 4;
-  string status = 5;
+  repeated string status = 5;
 }
 
 message PlaneList {
