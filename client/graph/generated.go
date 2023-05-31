@@ -47,16 +47,16 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Flight struct {
-		AvailableSeats       func(childComplexity int) int
-		DeparturePoint       func(childComplexity int) int
-		DepartureTime        func(childComplexity int) int
-		DestinationPoint     func(childComplexity int) int
-		EstimatedArrivalTime func(childComplexity int) int
-		ID                   func(childComplexity int) int
-		PlaneNumber          func(childComplexity int) int
-		RealArrivalTime      func(childComplexity int) int
-		RealDepartureTime    func(childComplexity int) int
-		Status               func(childComplexity int) int
+		AvailableSeats         func(childComplexity int) int
+		DeparturePoint         func(childComplexity int) int
+		DestinationPoint       func(childComplexity int) int
+		EstimatedArrivalTime   func(childComplexity int) int
+		ID                     func(childComplexity int) int
+		PlaneNumber            func(childComplexity int) int
+		RealArrivalTime        func(childComplexity int) int
+		RealDepartureTime      func(childComplexity int) int
+		ScheduledDepartureTime func(childComplexity int) int
+		Status                 func(childComplexity int) int
 	}
 
 	FlightId struct {
@@ -92,9 +92,9 @@ type ComplexityRoot struct {
 
 	Query struct {
 		GetFlightByID  func(childComplexity int, id string) int
-		GetFlightsList func(childComplexity int, flight *model.FlightInput) int
+		GetFlightsList func(childComplexity int, flight *model.FlightQuery) int
 		GetPlaneByID   func(childComplexity int, id string) int
-		GetPlanesList  func(childComplexity int, plane *model.PlaneInput) int
+		GetPlanesList  func(childComplexity int, plane *model.PlaneQuery) int
 	}
 }
 
@@ -106,9 +106,9 @@ type MutationResolver interface {
 	BookFlight(ctx context.Context, input model.BookFlightInput) (bool, error)
 }
 type QueryResolver interface {
-	GetPlanesList(ctx context.Context, plane *model.PlaneInput) (*model.PlaneList, error)
+	GetPlanesList(ctx context.Context, plane *model.PlaneQuery) (*model.PlaneList, error)
 	GetPlaneByID(ctx context.Context, id string) (*model.Plane, error)
-	GetFlightsList(ctx context.Context, flight *model.FlightInput) (*model.FlightList, error)
+	GetFlightsList(ctx context.Context, flight *model.FlightQuery) (*model.FlightList, error)
 	GetFlightByID(ctx context.Context, id string) (*model.Flight, error)
 }
 
@@ -140,13 +140,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Flight.DeparturePoint(childComplexity), true
-
-	case "Flight.departure_time":
-		if e.complexity.Flight.DepartureTime == nil {
-			break
-		}
-
-		return e.complexity.Flight.DepartureTime(childComplexity), true
 
 	case "Flight.destination_point":
 		if e.complexity.Flight.DestinationPoint == nil {
@@ -189,6 +182,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Flight.RealDepartureTime(childComplexity), true
+
+	case "Flight.scheduled_departure_time":
+		if e.complexity.Flight.ScheduledDepartureTime == nil {
+			break
+		}
+
+		return e.complexity.Flight.ScheduledDepartureTime(childComplexity), true
 
 	case "Flight.status":
 		if e.complexity.Flight.Status == nil {
@@ -335,7 +335,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetFlightsList(childComplexity, args["flight"].(*model.FlightInput)), true
+		return e.complexity.Query.GetFlightsList(childComplexity, args["flight"].(*model.FlightQuery)), true
 
 	case "Query.getPlaneById":
 		if e.complexity.Query.GetPlaneByID == nil {
@@ -359,7 +359,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.GetPlanesList(childComplexity, args["plane"].(*model.PlaneInput)), true
+		return e.complexity.Query.GetPlanesList(childComplexity, args["plane"].(*model.PlaneQuery)), true
 
 	}
 	return 0, false
@@ -372,9 +372,11 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputBookFlightInput,
 		ec.unmarshalInputFlightIdInput,
 		ec.unmarshalInputFlightInput,
+		ec.unmarshalInputFlightQuery,
 		ec.unmarshalInputFlightStatusInput,
 		ec.unmarshalInputPlaneIdInput,
 		ec.unmarshalInputPlaneInput,
+		ec.unmarshalInputPlaneQuery,
 		ec.unmarshalInputPlaneStatusInput,
 	)
 	first := true
@@ -563,10 +565,10 @@ func (ec *executionContext) field_Query_getFlightById_args(ctx context.Context, 
 func (ec *executionContext) field_Query_getFlightsList_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.FlightInput
+	var arg0 *model.FlightQuery
 	if tmp, ok := rawArgs["flight"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("flight"))
-		arg0, err = ec.unmarshalOFlightInput2ᚖgithubᚗcomᚋghcᚑgolangᚑhoangth7ᚋfinalprjᚋclientᚋgraphᚋmodelᚐFlightInput(ctx, tmp)
+		arg0, err = ec.unmarshalOFlightQuery2ᚖgithubᚗcomᚋghcᚑgolangᚑhoangth7ᚋfinalprjᚋclientᚋgraphᚋmodelᚐFlightQuery(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -593,10 +595,10 @@ func (ec *executionContext) field_Query_getPlaneById_args(ctx context.Context, r
 func (ec *executionContext) field_Query_getPlanesList_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.PlaneInput
+	var arg0 *model.PlaneQuery
 	if tmp, ok := rawArgs["plane"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plane"))
-		arg0, err = ec.unmarshalOPlaneInput2ᚖgithubᚗcomᚋghcᚑgolangᚑhoangth7ᚋfinalprjᚋclientᚋgraphᚋmodelᚐPlaneInput(ctx, tmp)
+		arg0, err = ec.unmarshalOPlaneQuery2ᚖgithubᚗcomᚋghcᚑgolangᚑhoangth7ᚋfinalprjᚋclientᚋgraphᚋmodelᚐPlaneQuery(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -819,8 +821,8 @@ func (ec *executionContext) fieldContext_Flight_destination_point(ctx context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _Flight_departure_time(ctx context.Context, field graphql.CollectedField, obj *model.Flight) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Flight_departure_time(ctx, field)
+func (ec *executionContext) _Flight_scheduled_departure_time(ctx context.Context, field graphql.CollectedField, obj *model.Flight) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Flight_scheduled_departure_time(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -833,7 +835,7 @@ func (ec *executionContext) _Flight_departure_time(ctx context.Context, field gr
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.DepartureTime, nil
+		return obj.ScheduledDepartureTime, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -850,7 +852,7 @@ func (ec *executionContext) _Flight_departure_time(ctx context.Context, field gr
 	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Flight_departure_time(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Flight_scheduled_departure_time(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Flight",
 		Field:      field,
@@ -884,14 +886,11 @@ func (ec *executionContext) _Flight_estimated_arrival_time(ctx context.Context, 
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(time.Time)
+	res := resTmp.(*time.Time)
 	fc.Result = res
-	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Flight_estimated_arrival_time(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -928,14 +927,11 @@ func (ec *executionContext) _Flight_real_departure_time(ctx context.Context, fie
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(time.Time)
+	res := resTmp.(*time.Time)
 	fc.Result = res
-	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Flight_real_departure_time(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -972,14 +968,11 @@ func (ec *executionContext) _Flight_real_arrival_time(ctx context.Context, field
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(time.Time)
+	res := resTmp.(*time.Time)
 	fc.Result = res
-	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Flight_real_arrival_time(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1174,8 +1167,8 @@ func (ec *executionContext) fieldContext_FlightList_flights(ctx context.Context,
 				return ec.fieldContext_Flight_departure_point(ctx, field)
 			case "destination_point":
 				return ec.fieldContext_Flight_destination_point(ctx, field)
-			case "departure_time":
-				return ec.fieldContext_Flight_departure_time(ctx, field)
+			case "scheduled_departure_time":
+				return ec.fieldContext_Flight_scheduled_departure_time(ctx, field)
 			case "estimated_arrival_time":
 				return ec.fieldContext_Flight_estimated_arrival_time(ctx, field)
 			case "real_departure_time":
@@ -1764,7 +1757,7 @@ func (ec *executionContext) _Query_getPlanesList(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetPlanesList(rctx, fc.Args["plane"].(*model.PlaneInput))
+		return ec.resolvers.Query().GetPlanesList(rctx, fc.Args["plane"].(*model.PlaneQuery))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1888,7 +1881,7 @@ func (ec *executionContext) _Query_getFlightsList(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetFlightsList(rctx, fc.Args["flight"].(*model.FlightInput))
+		return ec.resolvers.Query().GetFlightsList(rctx, fc.Args["flight"].(*model.FlightQuery))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1980,8 +1973,8 @@ func (ec *executionContext) fieldContext_Query_getFlightById(ctx context.Context
 				return ec.fieldContext_Flight_departure_point(ctx, field)
 			case "destination_point":
 				return ec.fieldContext_Flight_destination_point(ctx, field)
-			case "departure_time":
-				return ec.fieldContext_Flight_departure_time(ctx, field)
+			case "scheduled_departure_time":
+				return ec.fieldContext_Flight_scheduled_departure_time(ctx, field)
 			case "estimated_arrival_time":
 				return ec.fieldContext_Flight_estimated_arrival_time(ctx, field)
 			case "real_departure_time":
@@ -3986,7 +3979,7 @@ func (ec *executionContext) unmarshalInputFlightInput(ctx context.Context, obj i
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "plane_number", "departure_point", "destination_point", "departure_time", "estimated_arrival_time", "real_departure_time", "real_arrival_time", "status", "available_seats"}
+	fieldsInOrder := [...]string{"id", "plane_number", "departure_point", "destination_point", "scheduled_departure_time"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -4029,60 +4022,116 @@ func (ec *executionContext) unmarshalInputFlightInput(ctx context.Context, obj i
 				return it, err
 			}
 			it.DestinationPoint = data
-		case "departure_time":
+		case "scheduled_departure_time":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("departure_time"))
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scheduled_departure_time"))
 			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.DepartureTime = data
-		case "estimated_arrival_time":
+			it.ScheduledDepartureTime = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputFlightQuery(ctx context.Context, obj interface{}) (model.FlightQuery, error) {
+	var it model.FlightQuery
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "plane_number", "departure_point", "destination_point", "scheduled_departure_time_from", "scheduled_departure_time_to", "status", "available_seats_from", "available_seats_to"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("estimated_arrival_time"))
-			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.EstimatedArrivalTime = data
-		case "real_departure_time":
+			it.ID = data
+		case "plane_number":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("real_departure_time"))
-			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plane_number"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.RealDepartureTime = data
-		case "real_arrival_time":
+			it.PlaneNumber = data
+		case "departure_point":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("real_arrival_time"))
-			data, err := ec.unmarshalNTime2timeᚐTime(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("departure_point"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.RealArrivalTime = data
+			it.DeparturePoint = data
+		case "destination_point":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("destination_point"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DestinationPoint = data
+		case "scheduled_departure_time_from":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scheduled_departure_time_from"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ScheduledDepartureTimeFrom = data
+		case "scheduled_departure_time_to":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("scheduled_departure_time_to"))
+			data, err := ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ScheduledDepartureTimeTo = data
 		case "status":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
-			data, err := ec.unmarshalNString2string(ctx, v)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
 			it.Status = data
-		case "available_seats":
+		case "available_seats_from":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("available_seats"))
-			data, err := ec.unmarshalNInt2int(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("available_seats_from"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
 			if err != nil {
 				return it, err
 			}
-			it.AvailableSeats = data
+			it.AvailableSeatsFrom = data
+		case "available_seats_to":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("available_seats_to"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AvailableSeatsTo = data
 		}
 	}
 
@@ -4212,6 +4261,71 @@ func (ec *executionContext) unmarshalInputPlaneInput(ctx context.Context, obj in
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputPlaneQuery(ctx context.Context, obj interface{}) (model.PlaneQuery, error) {
+	var it model.PlaneQuery
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"plane_id", "plane_number", "total_seats_from", "total_seats_to", "status"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "plane_id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plane_id"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlaneID = data
+		case "plane_number":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plane_number"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PlaneNumber = data
+		case "total_seats_from":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("total_seats_from"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TotalSeatsFrom = data
+		case "total_seats_to":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("total_seats_to"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.TotalSeatsTo = data
+		case "status":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Status = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputPlaneStatusInput(ctx context.Context, obj interface{}) (model.PlaneStatusInput, error) {
 	var it model.PlaneStatusInput
 	asMap := map[string]interface{}{}
@@ -4296,9 +4410,9 @@ func (ec *executionContext) _Flight(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "departure_time":
+		case "scheduled_departure_time":
 
-			out.Values[i] = ec._Flight_departure_time(ctx, field, obj)
+			out.Values[i] = ec._Flight_scheduled_departure_time(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -4307,23 +4421,14 @@ func (ec *executionContext) _Flight(ctx context.Context, sel ast.SelectionSet, o
 
 			out.Values[i] = ec._Flight_estimated_arrival_time(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "real_departure_time":
 
 			out.Values[i] = ec._Flight_real_departure_time(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "real_arrival_time":
 
 			out.Values[i] = ec._Flight_real_arrival_time(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "status":
 
 			out.Values[i] = ec._Flight_status(ctx, field, obj)
@@ -5573,19 +5678,35 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) unmarshalOFlightInput2ᚖgithubᚗcomᚋghcᚑgolangᚑhoangth7ᚋfinalprjᚋclientᚋgraphᚋmodelᚐFlightInput(ctx context.Context, v interface{}) (*model.FlightInput, error) {
+func (ec *executionContext) unmarshalOFlightQuery2ᚖgithubᚗcomᚋghcᚑgolangᚑhoangth7ᚋfinalprjᚋclientᚋgraphᚋmodelᚐFlightQuery(ctx context.Context, v interface{}) (*model.FlightQuery, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalInputFlightInput(ctx, v)
+	res, err := ec.unmarshalInputFlightQuery(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOPlaneInput2ᚖgithubᚗcomᚋghcᚑgolangᚑhoangth7ᚋfinalprjᚋclientᚋgraphᚋmodelᚐPlaneInput(ctx context.Context, v interface{}) (*model.PlaneInput, error) {
+func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalInputPlaneInput(ctx, v)
+	res, err := graphql.UnmarshalInt(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalInt(*v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOPlaneQuery2ᚖgithubᚗcomᚋghcᚑgolangᚑhoangth7ᚋfinalprjᚋclientᚋgraphᚋmodelᚐPlaneQuery(ctx context.Context, v interface{}) (*model.PlaneQuery, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputPlaneQuery(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -5602,6 +5723,22 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 		return graphql.Null
 	}
 	res := graphql.MarshalString(*v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v interface{}) (*time.Time, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalTime(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel ast.SelectionSet, v *time.Time) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalTime(*v)
 	return res
 }
 

@@ -10,7 +10,7 @@ func (pb *Flight) FromModels(flight *models.Flight) {
 	pb.PlaneNumber = flight.PlaneNumber
 	pb.DeparturePoint = flight.DeparturePoint
 	pb.DestinationPoint = flight.DestinationPoint
-	pb.DepartureTime = timestamppb.New(flight.DepartureTime)
+	pb.ScheduledDepartureTime = timestamppb.New(flight.ScheduledDepartureTime)
 	pb.EstimatedArrivalTime = timestamppb.New(flight.EstimatedArrivalTime)
 	pb.RealDepartureTime = timestamppb.New(flight.RealDepartureTime.Time)
 	pb.RealArrivalTime = timestamppb.New(flight.RealArrivalTime.Time)

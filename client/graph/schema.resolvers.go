@@ -6,7 +6,6 @@ package graph
 
 import (
 	"context"
-	"time"
 
 	"github.com/ghc-golang-hoangth7/finalprj/client/graph/model"
 	pbFlights "github.com/ghc-golang-hoangth7/finalprj/pb/flights"
@@ -59,16 +58,11 @@ func (r *mutationResolver) ChangePlaneStatus(ctx context.Context, input model.Pl
 func (r *mutationResolver) UpsertFlight(ctx context.Context, flight model.FlightInput) (*model.FlightID, error) {
 	// Prepare the request to upsert a flight
 	flightReq := &pbFlights.Flight{
-		Id:                   flight.ID,
-		PlaneNumber:          flight.PlaneNumber,
-		DeparturePoint:       flight.DeparturePoint,
-		DestinationPoint:     flight.DestinationPoint,
-		DepartureTime:        &timestamp.Timestamp{Seconds: flight.DepartureTime.Unix()},
-		EstimatedArrivalTime: &timestamp.Timestamp{Seconds: flight.EstimatedArrivalTime.Unix()},
-		RealDepartureTime:    &timestamp.Timestamp{Seconds: flight.RealDepartureTime.Unix()},
-		RealArrivalTime:      &timestamp.Timestamp{Seconds: flight.RealArrivalTime.Unix()},
-		Status:               flight.Status,
-		AvailableSeats:       int32(flight.AvailableSeats),
+		Id:                     flight.ID,
+		PlaneNumber:            flight.PlaneNumber,
+		DeparturePoint:         flight.DeparturePoint,
+		DestinationPoint:       flight.DestinationPoint,
+		ScheduledDepartureTime: &timestamp.Timestamp{Seconds: flight.ScheduledDepartureTime.Unix()},
 	}
 
 	// Make the gRPC request to upsert a flight
@@ -120,13 +114,22 @@ func (r *mutationResolver) BookFlight(ctx context.Context, input model.BookFligh
 }
 
 // GetPlanesList is the resolver for the getPlanesList field.
-func (r *queryResolver) GetPlanesList(ctx context.Context, plane *model.PlaneInput) (*model.PlaneList, error) {
-	// Prepare the request to get planes list
-	planesReq := &pbPlanes.Plane{
-		PlaneId:     plane.PlaneID,
-		PlaneNumber: plane.PlaneNumber,
-		TotalSeats:  int32(plane.TotalSeats),
-		Status:      plane.Status,
+func (r *queryResolver) GetPlanesList(ctx context.Context, plane *model.PlaneQuery) (*model.PlaneList, error) {
+	planesReq := &pbPlanes.PlaneQuery{}
+	if plane.PlaneID != nil {
+		planesReq.PlaneId = *plane.PlaneID
+	}
+	if plane.PlaneNumber != nil {
+		planesReq.PlaneNumber = *plane.PlaneNumber
+	}
+	if plane.TotalSeatsFrom != nil {
+		planesReq.TotalSeatsFrom = int32(*plane.TotalSeatsFrom)
+	}
+	if plane.TotalSeatsTo != nil {
+		planesReq.TotalSeatsTo = int32(*plane.TotalSeatsTo)
+	}
+	if plane.Status != nil {
+		planesReq.Status = *plane.Status
 	}
 
 	// Make the gRPC request to get planes list
@@ -172,23 +175,10 @@ func (r *queryResolver) GetPlaneByID(ctx context.Context, id string) (*model.Pla
 }
 
 // GetFlightsList is the resolver for the getFlightsList field.
-func (r *queryResolver) GetFlightsList(ctx context.Context, flight *model.FlightInput) (*model.FlightList, error) {
-	// Prepare the request to get flights list
-	flightsReq := &pbFlights.Flight{
-		Id:                   flight.ID,
-		PlaneNumber:          flight.PlaneNumber,
-		DeparturePoint:       flight.DeparturePoint,
-		DestinationPoint:     flight.DestinationPoint,
-		DepartureTime:        &timestamp.Timestamp{Seconds: flight.DepartureTime.Unix()},
-		EstimatedArrivalTime: &timestamp.Timestamp{Seconds: flight.EstimatedArrivalTime.Unix()},
-		RealDepartureTime:    &timestamp.Timestamp{Seconds: flight.RealDepartureTime.Unix()},
-		RealArrivalTime:      &timestamp.Timestamp{Seconds: flight.RealArrivalTime.Unix()},
-		Status:               flight.Status,
-		AvailableSeats:       int32(flight.AvailableSeats),
-	}
+func (r *queryResolver) GetFlightsList(ctx context.Context, flight *model.FlightQuery) (*model.FlightList, error) {
 
 	// Make the gRPC request to get flights list
-	flightsListRes, err := r.FlightsService.GetFlightsList(ctx, flightsReq)
+	flightsListRes, err := r.FlightsService.GetFlightsList(ctx, flight.ToProto())
 	if err != nil {
 		return nil, err
 	}
@@ -196,18 +186,9 @@ func (r *queryResolver) GetFlightsList(ctx context.Context, flight *model.Flight
 	// Convert the gRPC response to the GraphQL response type
 	flights := make([]*model.Flight, len(flightsListRes.Flights))
 	for i, flight := range flightsListRes.Flights {
-		flights[i] = &model.Flight{
-			ID:                   flight.Id,
-			PlaneNumber:          flight.PlaneNumber,
-			DeparturePoint:       flight.DeparturePoint,
-			DestinationPoint:     flight.DestinationPoint,
-			DepartureTime:        time.Unix(flight.DepartureTime.Seconds, 0),
-			EstimatedArrivalTime: time.Unix(flight.EstimatedArrivalTime.Seconds, 0),
-			RealDepartureTime:    time.Unix(flight.RealDepartureTime.Seconds, 0),
-			RealArrivalTime:      time.Unix(flight.RealArrivalTime.Seconds, 0),
-			Status:               flight.Status,
-			AvailableSeats:       int(flight.AvailableSeats),
-		}
+		f := &model.Flight{}
+		f.FromProto(flight)
+		flights[i] = f
 	}
 
 	return &model.FlightList{Flights: flights}, nil
@@ -225,18 +206,8 @@ func (r *queryResolver) GetFlightByID(ctx context.Context, id string) (*model.Fl
 	}
 
 	// Convert the gRPC response to the GraphQL response type
-	flight := &model.Flight{
-		ID:                   flightRes.Id,
-		PlaneNumber:          flightRes.PlaneNumber,
-		DeparturePoint:       flightRes.DeparturePoint,
-		DestinationPoint:     flightRes.DestinationPoint,
-		DepartureTime:        time.Unix(flightRes.DepartureTime.Seconds, 0),
-		EstimatedArrivalTime: time.Unix(flightRes.EstimatedArrivalTime.Seconds, 0),
-		RealDepartureTime:    time.Unix(flightRes.RealDepartureTime.Seconds, 0),
-		RealArrivalTime:      time.Unix(flightRes.RealArrivalTime.Seconds, 0),
-		Status:               flightRes.Status,
-		AvailableSeats:       int(flightRes.AvailableSeats),
-	}
+	flight := &model.Flight{}
+	flight.FromProto(flightRes)
 
 	return flight, nil
 }

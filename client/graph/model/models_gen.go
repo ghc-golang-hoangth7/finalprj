@@ -12,16 +12,16 @@ type BookFlightInput struct {
 }
 
 type Flight struct {
-	ID                   string    `json:"id"`
-	PlaneNumber          string    `json:"plane_number"`
-	DeparturePoint       string    `json:"departure_point"`
-	DestinationPoint     string    `json:"destination_point"`
-	DepartureTime        time.Time `json:"departure_time"`
-	EstimatedArrivalTime time.Time `json:"estimated_arrival_time"`
-	RealDepartureTime    time.Time `json:"real_departure_time"`
-	RealArrivalTime      time.Time `json:"real_arrival_time"`
-	Status               string    `json:"status"`
-	AvailableSeats       int       `json:"available_seats"`
+	ID                     string     `json:"id"`
+	PlaneNumber            string     `json:"plane_number"`
+	DeparturePoint         string     `json:"departure_point"`
+	DestinationPoint       string     `json:"destination_point"`
+	ScheduledDepartureTime time.Time  `json:"scheduled_departure_time"`
+	EstimatedArrivalTime   *time.Time `json:"estimated_arrival_time,omitempty"`
+	RealDepartureTime      *time.Time `json:"real_departure_time,omitempty"`
+	RealArrivalTime        *time.Time `json:"real_arrival_time,omitempty"`
+	Status                 string     `json:"status"`
+	AvailableSeats         int        `json:"available_seats"`
 }
 
 type FlightID struct {
@@ -33,20 +33,27 @@ type FlightIDInput struct {
 }
 
 type FlightInput struct {
-	ID                   string    `json:"id"`
-	PlaneNumber          string    `json:"plane_number"`
-	DeparturePoint       string    `json:"departure_point"`
-	DestinationPoint     string    `json:"destination_point"`
-	DepartureTime        time.Time `json:"departure_time"`
-	EstimatedArrivalTime time.Time `json:"estimated_arrival_time"`
-	RealDepartureTime    time.Time `json:"real_departure_time"`
-	RealArrivalTime      time.Time `json:"real_arrival_time"`
-	Status               string    `json:"status"`
-	AvailableSeats       int       `json:"available_seats"`
+	ID                     string    `json:"id"`
+	PlaneNumber            string    `json:"plane_number"`
+	DeparturePoint         string    `json:"departure_point"`
+	DestinationPoint       string    `json:"destination_point"`
+	ScheduledDepartureTime time.Time `json:"scheduled_departure_time"`
 }
 
 type FlightList struct {
 	Flights []*Flight `json:"flights"`
+}
+
+type FlightQuery struct {
+	ID                         *string    `json:"id,omitempty"`
+	PlaneNumber                *string    `json:"plane_number,omitempty"`
+	DeparturePoint             *string    `json:"departure_point,omitempty"`
+	DestinationPoint           *string    `json:"destination_point,omitempty"`
+	ScheduledDepartureTimeFrom *time.Time `json:"scheduled_departure_time_from,omitempty"`
+	ScheduledDepartureTimeTo   *time.Time `json:"scheduled_departure_time_to,omitempty"`
+	Status                     *string    `json:"status,omitempty"`
+	AvailableSeatsFrom         *int       `json:"available_seats_from,omitempty"`
+	AvailableSeatsTo           *int       `json:"available_seats_to,omitempty"`
 }
 
 type FlightStatusInput struct {
@@ -78,6 +85,14 @@ type PlaneInput struct {
 
 type PlaneList struct {
 	Planes []*Plane `json:"planes"`
+}
+
+type PlaneQuery struct {
+	PlaneID        *string `json:"plane_id,omitempty"`
+	PlaneNumber    *string `json:"plane_number,omitempty"`
+	TotalSeatsFrom *int    `json:"total_seats_from,omitempty"`
+	TotalSeatsTo   *int    `json:"total_seats_to,omitempty"`
+	Status         *string `json:"status,omitempty"`
 }
 
 type PlaneStatusInput struct {

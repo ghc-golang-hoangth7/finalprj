@@ -15,6 +15,14 @@ type PlaneList {
   planes: [Plane!]!
 }
 
+input PlaneQuery {
+  plane_id: String
+  plane_number: String
+  total_seats_from: Int
+  total_seats_to: Int
+  status: String
+}
+
 input PlaneInput {
   plane_id: String!
   plane_number: String!
@@ -36,10 +44,10 @@ type Flight {
   plane_number: String!
   departure_point: String!
   destination_point: String!
-  departure_time: Time!
-  estimated_arrival_time: Time!
-  real_departure_time: Time!
-  real_arrival_time: Time!
+  scheduled_departure_time: Time!
+  estimated_arrival_time: Time
+  real_departure_time: Time
+  real_arrival_time: Time
   status: String!
   available_seats: Int!
 }
@@ -52,17 +60,24 @@ type FlightList {
   flights: [Flight!]!
 }
 
+input FlightQuery {
+  id: String
+  plane_number: String
+  departure_point: String
+  destination_point: String
+  scheduled_departure_time_from: Time
+  scheduled_departure_time_to: Time
+  status: String
+  available_seats_from: Int
+  available_seats_to: Int
+}
+
 input FlightInput {
   id: String!
   plane_number: String!
   departure_point: String!
   destination_point: String!
-  departure_time: Time!
-  estimated_arrival_time: Time!
-  real_departure_time: Time!
-  real_arrival_time: Time!
-  status: String!
-  available_seats: Int!
+  scheduled_departure_time: Time!
 }
 
 input FlightIdInput {
@@ -80,9 +95,9 @@ input BookFlightInput {
 }
 
 type Query {
-  getPlanesList(plane: PlaneInput): PlaneList!
+  getPlanesList(plane: PlaneQuery): PlaneList!
   getPlaneById(id: String!): Plane!
-  getFlightsList(flight: FlightInput): FlightList!
+  getFlightsList(flight: FlightQuery): FlightList!
   getFlightById(id: String!): Flight!
 }
 

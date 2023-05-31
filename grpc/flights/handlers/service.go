@@ -16,11 +16,13 @@ import (
 
 	"github.com/ghc-golang-hoangth7/finalprj/models"
 	pb "github.com/ghc-golang-hoangth7/finalprj/pb/flights"
+	pbPlanes "github.com/ghc-golang-hoangth7/finalprj/pb/planes"
 )
 
 type FlightService struct {
 	pb.UnimplementedFlightServiceServer
-	db *sql.DB
+	PlanesService pbPlanes.PlanesServiceClient
+	db            *sql.DB
 }
 
 func NewFlightService(db *sql.DB) *FlightService {
@@ -30,9 +32,22 @@ func NewFlightService(db *sql.DB) *FlightService {
 func (s *FlightService) UpsertFlight(ctx context.Context, req *pb.Flight) (*pb.FlightId, error) {
 	boil.SetDB(s.db)
 	// TODO: get plane's info
+	pbPlane, err := s.PlanesService.GetPlaneByNumber(ctx, &pbPlanes.PlaneNumber{
+		PlaneNumber: req.PlaneNumber,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "failed to get plane info: %v", err)
+	}
 
 	if len(req.Id) == 0 {
 		req.Id = uuid.New().String()
+		if req.ScheduledDepartureTime.AsTime().Before(time.Now().AddDate(0, 0, 7)) {
+			return nil, status.Errorf(codes.InvalidArgument, "Flight must be scheduled at least a week before departure time")
+		}
+		req.Status = "scheduled"
+		req.AvailableSeats = pbPlane.TotalSeats - 15
+		req.RealArrivalTime = nil
+		req.RealDepartureTime = nil
 
 		err := req.ToModels().Insert(ctx, boil.GetContextDB(), boil.Infer())
 		if err != nil {
@@ -50,13 +65,37 @@ func (s *FlightService) UpsertFlight(ctx context.Context, req *pb.Flight) (*pb.F
 }
 
 // GetFlightsList returns a list of flights based on the input query
-func (s *FlightService) GetFlightsList(ctx context.Context, req *pb.Flight) (*pb.FlightList, error) {
-	flights, err := models.Flights(
-		qm.Where("departure_point = ?", req.DeparturePoint),
-		qm.Where("destination_point = ?", req.DestinationPoint),
-		qm.Where("departure_time >= ?", req.DepartureTime),
-		qm.Where("departure_time <= ?", req.EstimatedArrivalTime),
-	).All(ctx, s.db)
+func (s *FlightService) GetFlightsList(ctx context.Context, req *pb.FlightQuery) (*pb.FlightList, error) {
+	queries := []qm.QueryMod{}
+	if len(req.Id) > 0 {
+		queries = append(queries, qm.Where("flight_id = ?", req.Id))
+	}
+	if len(req.PlaneNumber) > 0 {
+		queries = append(queries, qm.Where("plane_number = ?", req.PlaneNumber))
+	}
+	if len(req.DeparturePoint) > 0 {
+		queries = append(queries, qm.Where("departure_point = ?", req.DeparturePoint))
+	}
+	if len(req.DestinationPoint) > 0 {
+		queries = append(queries, qm.Where("destination_point = ?", req.DestinationPoint))
+	}
+	if req.ScheduledDepartureTimeFrom != nil && !req.ScheduledDepartureTimeFrom.AsTime().IsZero() {
+		queries = append(queries, qm.Where("scheduled_departure_time >= ?", req.ScheduledDepartureTimeFrom.AsTime()))
+	}
+	if req.ScheduledDepartureTimeTo != nil && !req.ScheduledDepartureTimeTo.AsTime().IsZero() {
+		queries = append(queries, qm.Where("scheduled_departure_time <= ?", req.ScheduledDepartureTimeTo.AsTime()))
+	}
+	if len(req.Status) > 0 {
+		queries = append(queries, qm.Where("status = ?", req.Status))
+	}
+	if req.AvailableSeatsFrom > 0 {
+		queries = append(queries, qm.Where("available_seats >= ?", req.AvailableSeatsFrom))
+	}
+	if req.AvailableSeatsTo > 0 {
+		queries = append(queries, qm.Where("available_seats <= ?", req.AvailableSeatsTo))
+	}
+
+	flights, err := models.Flights(queries...).All(ctx, s.db)
 	if err != nil {
 		return nil, err
 	}
@@ -107,7 +146,7 @@ func (s *FlightService) BookFlight(ctx context.Context, req *pb.BookFlightReques
 	}
 
 	// Check if the departure time is at least 45 minutes from now
-	if time.Until(flight.DepartureTime) <= 45*time.Minute {
+	if time.Until(flight.ScheduledDepartureTime) <= 45*time.Minute {
 		return &emptypb.Empty{}, status.Errorf(codes.FailedPrecondition, "it is too late to book this flight")
 	}
 

@@ -17,6 +17,18 @@ message PlaneId {
   string id = 1;
 }
 
+message PlaneNumber {
+  string plane_number = 1;
+}
+
+message PlaneQuery {
+  string plane_id = 1;
+  string plane_number = 2;
+  int32 total_seats_from = 3;
+  int32 total_seats_to = 4;
+  string status = 5;
+}
+
 message PlaneList {
   repeated Plane planes = 1;
 }
@@ -28,7 +40,8 @@ message PlaneStatusRequest {
 
 service PlanesService {
   rpc UpsertPlane (Plane) returns (PlaneId);
-  rpc GetPlanesList (Plane) returns (PlaneList);
+  rpc GetPlanesList (PlaneQuery) returns (PlaneList);
   rpc GetPlaneById(PlaneId) returns (Plane);
+  rpc GetPlaneByNumber(PlaneNumber) returns (Plane);
   rpc ChangePlaneStatus (PlaneStatusRequest) returns (google.protobuf.Empty);
 }

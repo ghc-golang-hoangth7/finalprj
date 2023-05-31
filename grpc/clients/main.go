@@ -33,12 +33,12 @@ func testFlights() {
 	client := flights.NewFlightServiceClient(conn)
 
 	flight := flights.Flight{
-		PlaneNumber:          "DEF123",
-		DeparturePoint:       "A",
-		DestinationPoint:     "B",
-		DepartureTime:        timestamppb.New(time.Now().AddDate(0, 0, 7)),
-		EstimatedArrivalTime: timestamppb.New(time.Now().AddDate(0, 0, 7).Add(4 * time.Hour)),
-		AvailableSeats:       400,
+		PlaneNumber:            "DEF123",
+		DeparturePoint:         "A",
+		DestinationPoint:       "B",
+		ScheduledDepartureTime: timestamppb.New(time.Now().AddDate(0, 0, 7)),
+		EstimatedArrivalTime:   timestamppb.New(time.Now().AddDate(0, 0, 7).Add(4 * time.Hour)),
+		AvailableSeats:         400,
 	}
 
 	if id, err := client.UpsertFlight(context.Background(), &flight); err != nil {
@@ -95,7 +95,7 @@ func addOrUpdatePlane(client planes.PlanesServiceClient, plane *planes.Plane) {
 func listPlanes(client planes.PlanesServiceClient) {
 	// List planes
 	fmt.Println("Viewing a list of planes...")
-	planes, err := client.GetPlanesList(context.Background(), &planes.Plane{
+	planes, err := client.GetPlanesList(context.Background(), &planes.PlaneQuery{
 		PlaneNumber: "DEF123",
 	})
 	if err != nil {

@@ -32,7 +32,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FlightServiceClient interface {
 	UpsertFlight(ctx context.Context, in *Flight, opts ...grpc.CallOption) (*FlightId, error)
-	GetFlightsList(ctx context.Context, in *Flight, opts ...grpc.CallOption) (*FlightList, error)
+	GetFlightsList(ctx context.Context, in *FlightQuery, opts ...grpc.CallOption) (*FlightList, error)
 	GetFlightById(ctx context.Context, in *FlightId, opts ...grpc.CallOption) (*Flight, error)
 	ChangeFlightStatus(ctx context.Context, in *FlightStatusRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	BookFlight(ctx context.Context, in *BookFlightRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -55,7 +55,7 @@ func (c *flightServiceClient) UpsertFlight(ctx context.Context, in *Flight, opts
 	return out, nil
 }
 
-func (c *flightServiceClient) GetFlightsList(ctx context.Context, in *Flight, opts ...grpc.CallOption) (*FlightList, error) {
+func (c *flightServiceClient) GetFlightsList(ctx context.Context, in *FlightQuery, opts ...grpc.CallOption) (*FlightList, error) {
 	out := new(FlightList)
 	err := c.cc.Invoke(ctx, FlightService_GetFlightsList_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -96,7 +96,7 @@ func (c *flightServiceClient) BookFlight(ctx context.Context, in *BookFlightRequ
 // for forward compatibility
 type FlightServiceServer interface {
 	UpsertFlight(context.Context, *Flight) (*FlightId, error)
-	GetFlightsList(context.Context, *Flight) (*FlightList, error)
+	GetFlightsList(context.Context, *FlightQuery) (*FlightList, error)
 	GetFlightById(context.Context, *FlightId) (*Flight, error)
 	ChangeFlightStatus(context.Context, *FlightStatusRequest) (*emptypb.Empty, error)
 	BookFlight(context.Context, *BookFlightRequest) (*emptypb.Empty, error)
@@ -110,7 +110,7 @@ type UnimplementedFlightServiceServer struct {
 func (UnimplementedFlightServiceServer) UpsertFlight(context.Context, *Flight) (*FlightId, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpsertFlight not implemented")
 }
-func (UnimplementedFlightServiceServer) GetFlightsList(context.Context, *Flight) (*FlightList, error) {
+func (UnimplementedFlightServiceServer) GetFlightsList(context.Context, *FlightQuery) (*FlightList, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetFlightsList not implemented")
 }
 func (UnimplementedFlightServiceServer) GetFlightById(context.Context, *FlightId) (*Flight, error) {
@@ -154,7 +154,7 @@ func _FlightService_UpsertFlight_Handler(srv interface{}, ctx context.Context, d
 }
 
 func _FlightService_GetFlightsList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Flight)
+	in := new(FlightQuery)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -166,7 +166,7 @@ func _FlightService_GetFlightsList_Handler(srv interface{}, ctx context.Context,
 		FullMethod: FlightService_GetFlightsList_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FlightServiceServer).GetFlightsList(ctx, req.(*Flight))
+		return srv.(FlightServiceServer).GetFlightsList(ctx, req.(*FlightQuery))
 	}
 	return interceptor(ctx, in, info, handler)
 }

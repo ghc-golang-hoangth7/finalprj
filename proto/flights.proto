@@ -12,7 +12,7 @@ message Flight {
   string plane_number = 2;
   string departure_point = 3;
   string destination_point = 4;
-  google.protobuf.Timestamp departure_time = 5;
+  google.protobuf.Timestamp scheduled_departure_time = 5;
   google.protobuf.Timestamp estimated_arrival_time = 6;
   google.protobuf.Timestamp real_departure_time = 7;
   google.protobuf.Timestamp real_arrival_time = 8;
@@ -22,6 +22,18 @@ message Flight {
 
 message FlightId {
   string id = 1;
+}
+
+message FlightQuery {
+  string id = 1;
+  string plane_number = 2;
+  string departure_point = 3;
+  string destination_point = 4;
+  google.protobuf.Timestamp scheduled_departure_time_from = 5;
+  google.protobuf.Timestamp scheduled_departure_time_to = 6;
+  string status = 7;
+  int32 available_seats_from = 8;
+  int32 available_seats_to = 9;
 }
 
 message FlightList {
@@ -40,7 +52,7 @@ message BookFlightRequest {
 
 service FlightService {
   rpc UpsertFlight(Flight) returns (FlightId);
-  rpc GetFlightsList(Flight) returns (FlightList);
+  rpc GetFlightsList(FlightQuery) returns (FlightList);
   rpc GetFlightById(FlightId) returns (Flight);
   rpc ChangeFlightStatus(FlightStatusRequest) returns (google.protobuf.Empty);
   rpc BookFlight(BookFlightRequest) returns (google.protobuf.Empty);

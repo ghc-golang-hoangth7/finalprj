@@ -22,19 +22,18 @@ func main() {
 		port = defaultPort
 	}
 
-	planesConn, err := grpc.Dial("planes-service-address:port", grpc.WithInsecure())
-	flightsConn, err := grpc.Dial("flights-service-address:port", grpc.WithInsecure())
+	planesConn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	if err != nil {
+		log.Fatal(err)
+	}
+	flightsConn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer planesConn.Close()
 	defer flightsConn.Close()
 
-	if err != nil {
-		// Handle connection error
-	}
 	planesServiceClient := pbPlanes.NewPlanesServiceClient(planesConn)
-
-	if err != nil {
-		// Handle connection error
-	}
 	flightsServiceClient := pbFlights.NewFlightServiceClient(flightsConn)
 
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
