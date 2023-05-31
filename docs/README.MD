@@ -1,6 +1,3 @@
-## Lưu ý chọn nhóm vào folder Đăng ký nhóm, clone lại file này dưới dạng docx và ghi tên file là tên các thành viên trong nhóm, chọn màu nền vàng cho các phần nhóm thấy khối lượng công việc là quá nhiều và muốn lược bỏ
-Ví dụ GiaoLX_ChungDV3.docx
-
 ## Khách hàng là một hãng hàng không đang cần viết một ứng dụng giả lập với nội dung như sau:
 
 ### Xây dựng hệ thống phần mềm đáp ứng các yêu cầu nghiệp vụ sau
@@ -34,7 +31,7 @@ Ví dụ GiaoLX_ChungDV3.docx
 > - Không thể xóa máy bay khi đã có chuyến bay được lên lịch
 > - Khi tạo chuyến bay cần lấy thông tin mới nhất về máy bay trước khi tạo (số ghế)
 
-> #### Các yêu cầu project 
+> #### Các yêu cầu project
 > - Yêu cầu sử dụng GraphQL với API endpoint cho các client
 > - Yêu cầu sử dụng gRPC cho giao tiếp giữa các services
 #### Gợi ý về cấu trúc thư mục code
@@ -47,9 +44,9 @@ Ví dụ GiaoLX_ChungDV3.docx
         ├──models
         ├──repository
         ├──requests
-        ├──responses                        
+        ├──responses
         ├──main.go                          # main file of service, contain startup, load config, etc
-├──config                                   # Store config  
+├──config                                   # Store config
 ├──logger                                   # Logging
 ├──pb                                       # grpc
 ├──proto                                    # Protobuff file

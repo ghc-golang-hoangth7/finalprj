@@ -157,7 +157,9 @@ func (s *FlightService) GetFlightById(ctx context.Context, req *pb.FlightId) (*p
 func (s *FlightService) BookFlight(ctx context.Context, req *pb.BookFlightRequest) (*emptypb.Empty, error) {
 	// Retrieve the flight by ID
 	flight, err := models.FindFlight(ctx, s.db, req.FlightId)
-	if err != nil {
+	if err == sql.ErrNoRows {
+		return &emptypb.Empty{}, status.Errorf(codes.NotFound, "flight not found")
+	} else if err != nil {
 		return &emptypb.Empty{}, status.Errorf(codes.Internal, "failed to retrieve flight: %v", err)
 	}
 
