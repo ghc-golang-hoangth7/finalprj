@@ -1,5 +1,7 @@
 scalar Time
 
+directive @validate(constraint: String!) on INPUT_FIELD_DEFINITION | ARGUMENT_DEFINITION
+
 type Plane {
   plane_id: String!
   plane_number: String!
@@ -16,27 +18,27 @@ type PlaneList {
 }
 
 input PlaneQuery {
-  plane_id: String
-  plane_number: String
-  total_seats_from: Int
-  total_seats_to: Int
+  plane_id: String @validate(constraint: "uuid")
+  plane_number: String @validate(constraint: "min=3,max=30")
+  total_seats_from: Int @validate(constraint: "min=30,max=300")
+  total_seats_to: Int @validate(constraint: "min=30,max=300")
   status: [String]
 }
 
 input PlaneInput {
-  plane_id: String
-  plane_number: String!
-  total_seats: Int!
-  status: String!
+  plane_id: String @validate(constraint: "uuid")
+  plane_number: String! @validate(constraint: "min=3,max=30")
+  total_seats: Int! @validate(constraint: "min=30,max=300")
+  status: String! @validate(constraint: "oneof='flying' 'cleaning' 'repairing' 'ready' 'deleted'")
 }
 
 input PlaneIdInput {
-  id: String!
+  id: String! @validate(constraint: "uuid")
 }
 
 input PlaneStatusInput {
-  plane_id: String!
-  status: String!
+  plane_id: String! @validate(constraint: "uuid")
+  status: String! @validate(constraint: "oneof='flying' 'cleaning' 'repairing' 'ready' 'deleted'")
 }
 
 type Flight {
@@ -61,8 +63,8 @@ type FlightList {
 }
 
 input FlightQuery {
-  id: String
-  plane_number: String
+  id: String @validate(constraint: "uuid")
+  plane_number: String @validate(constraint: "min=3,max=30")
   departure_point: String
   destination_point: String
   scheduled_departure_time_from: Time
@@ -73,25 +75,25 @@ input FlightQuery {
 }
 
 input FlightInput {
-  id: String
-  plane_number: String!
+  id: String @validate(constraint: "uuid")
+  plane_number: String! @validate(constraint: "min=3,max=30")
   departure_point: String!
   destination_point: String!
   scheduled_departure_time: Time!
 }
 
 input FlightIdInput {
-  id: String!
+  id: String! @validate(constraint: "uuid")
 }
 
 input FlightStatusInput {
-  flight_id: String!
-  status: String!
+  flight_id: String! @validate(constraint: "uuid")
+  status: String! @validate(constraint: "oneof='scheduled' 'canceled' 'flying' 'finished'")
 }
 
 input BookFlightInput {
-  flight_id: String!
-  number_of_seats: Int!
+  flight_id: String! @validate(constraint: "uuid")
+  number_of_seats: Int! @validate(constraint: "min=1,max=10")
 }
 
 type Query {

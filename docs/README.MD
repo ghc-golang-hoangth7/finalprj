@@ -22,7 +22,7 @@
 > #### Là người quản lý công tác hậu cần ở sân bay, người dùng mong muốn
 > - Cập nhật trạng thái máy bay
 > - Thêm/Cập nhật/ máy bay với các thông tin cơ bản của máy bay
-> - Số hiệu
+> - Số hiệu => unique & un-updatable
 > - Tổng số chỗ
 > - Trạng thái: đang dọn dẹp, sửa chữa, sẵn sàng để bay
 

@@ -61,7 +61,7 @@ func (s *FlightService) UpsertFlight(ctx context.Context, req *pb.Flight) (*pb.F
 		}
 
 		req.Status = "scheduled"
-		req.AvailableSeats = pbPlane.TotalSeats - 15
+		req.AvailableSeats = pbPlane.TotalSeats - 10
 		req.RealArrivalTime = nil
 		req.RealDepartureTime = nil
 
@@ -122,7 +122,7 @@ func (s *FlightService) GetFlightsList(ctx context.Context, req *pb.FlightQuery)
 
 	flights, err := models.Flights(queries...).All(ctx, s.db)
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "Fail to get flights list, %v", err)
 	}
 
 	flightList := &pb.FlightList{}

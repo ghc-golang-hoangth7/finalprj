@@ -8,6 +8,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/ghc-golang-hoangth7/finalprj/client/graph"
 	pbFlights "github.com/ghc-golang-hoangth7/finalprj/pb/flights"
@@ -22,11 +23,11 @@ func main() {
 		port = defaultPort
 	}
 
-	planesConn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	planesConn, err := grpc.Dial("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal(err)
 	}
-	flightsConn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
+	flightsConn, err := grpc.Dial("localhost:50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,10 +37,15 @@ func main() {
 	planesServiceClient := pbPlanes.NewPlanesServiceClient(planesConn)
 	flightsServiceClient := pbFlights.NewFlightServiceClient(flightsConn)
 
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
-		FlightsService: flightsServiceClient,
-		PlanesService:  planesServiceClient,
-	}}))
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{
+		Resolvers: &graph.Resolver{
+			FlightsService: flightsServiceClient,
+			PlanesService:  planesServiceClient,
+		},
+		Directives: graph.DirectiveRoot{
+			Validate: graph.Validate,
+		},
+	}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
