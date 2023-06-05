@@ -1,0 +1,40 @@
+version: '3'
+name: ghc-golang-finalprj
+services:
+  postgres:
+    build:
+      context: ./db
+    container_name: postgres_db
+    ports:
+      - 6432:5432
+
+  planes:
+    build:
+      context: .
+      dockerfile: ./grpc/planes/cmd/Dockerfile
+    container_name: planes_service
+    ports:
+      - 50051:50051
+    depends_on:
+      - postgres
+
+  flights:
+    build:
+      context: .
+      dockerfile: ./grpc/flights/cmd/Dockerfile
+    container_name: flights_service
+    ports:
+      - 50052:50052
+    depends_on:
+      - postgres
+
+  graph:
+    build:
+      context: .
+      dockerfile: ./client/graph/cmd/Dockerfile
+    container_name: graph_endpoint
+    ports:
+      - 8080:8080
+    depends_on:
+      - flights
+      - planes

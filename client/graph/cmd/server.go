@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -11,18 +11,16 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/ghc-golang-hoangth7/finalprj/client/graph"
+	"github.com/ghc-golang-hoangth7/finalprj/common"
 	pbFlights "github.com/ghc-golang-hoangth7/finalprj/pb/flights"
 	pbPlanes "github.com/ghc-golang-hoangth7/finalprj/pb/planes"
 )
 
-const defaultPort = "8080"
-
 func main() {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = defaultPort
+	appConfig, err := common.LoadConfig()
+	if err != nil {
+		log.Fatal(err)
 	}
-
 	planesConn, err := grpc.Dial("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal(err)
@@ -50,6 +48,6 @@ func main() {
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Printf("connect to http://%v:%v/ for GraphQL playground", appConfig.GraphQLHost, appConfig.GraphQLPort)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf("%v:%v", appConfig.GraphQLHost, appConfig.GraphQLPort), nil))
 }

@@ -1,0 +1,13 @@
+#Ignoring folders
+.git
+.cache
+.vscode
+logs
+
+#Ignoring files
+**/*.md
+**/*.proto
+**/Dockerfile
+docker-compose.yml
+gqlgen.yml
+sqlboiler.toml
