@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func NewServiceClient(config common.Config) (FlightServiceClient, *grpc.ClientConn, error) {
+func NewServiceClient(config *common.Config) (FlightServiceClient, *grpc.ClientConn, error) {
 	// Set up a gRPC connection to the Flights service
 	conn, err := grpc.Dial(config.GetFlightsAddr(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {

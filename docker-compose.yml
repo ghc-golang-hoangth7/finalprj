@@ -5,6 +5,9 @@ services:
     build:
       context: ./db
     container_name: postgres_db
+    image: postgres_db
+    env_file:
+      - config/docker.env
     ports:
       - 6432:5432
 
@@ -13,6 +16,9 @@ services:
       context: .
       dockerfile: ./grpc/planes/cmd/Dockerfile
     container_name: planes_service
+    image: planes_service
+    env_file:
+      - config/docker.env
     ports:
       - 50051:50051
     depends_on:
@@ -23,6 +29,9 @@ services:
       context: .
       dockerfile: ./grpc/flights/cmd/Dockerfile
     container_name: flights_service
+    image: flights_service
+    env_file:
+      - config/docker.env
     ports:
       - 50052:50052
     depends_on:
@@ -33,6 +42,9 @@ services:
       context: .
       dockerfile: ./client/graph/cmd/Dockerfile
     container_name: graph_endpoint
+    image: graph_endpoint
+    env_file:
+      - config/docker.env
     ports:
       - 8080:8080
     depends_on:

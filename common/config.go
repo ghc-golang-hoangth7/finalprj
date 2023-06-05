@@ -8,10 +8,14 @@ import (
 	"github.com/joho/godotenv"
 )
 
+const ConfigPath = "../../../config/.env"
+
 type Config struct {
 	PostgresHost     string
 	PostgresPort     int
+	PostgresUser     string
 	PostgresPassword string
+	DbName           string
 	PlanesHost       string
 	PlanesPort       int
 	FlightsHost      string
@@ -22,7 +26,7 @@ type Config struct {
 
 func LoadConfig() (*Config, error) {
 	if os.Getenv("ENV_LOADED") != "true" {
-		err := godotenv.Load()
+		err := godotenv.Load(ConfigPath)
 		if err != nil {
 			return nil, fmt.Errorf("failed to load .env file: %w", err)
 		}
@@ -30,7 +34,9 @@ func LoadConfig() (*Config, error) {
 
 	config := &Config{
 		PostgresHost:     os.Getenv("POSTGRES_HOST"),
+		PostgresUser:     os.Getenv("POSTGRES_USER"),
 		PostgresPassword: os.Getenv("POSTGRES_PASSWORD"),
+		DbName:           os.Getenv("DB_NAME"),
 		PlanesHost:       os.Getenv("PLANES_SERVICE_HOST"),
 		FlightsHost:      os.Getenv("FLIGHTS_SERVICE_HOST"),
 		GraphQLHost:      os.Getenv("GRAPHQL_HOST"),

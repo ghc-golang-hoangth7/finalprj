@@ -21,11 +21,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	planesConn, err := grpc.Dial("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	planesConn, err := grpc.Dial(appConfig.GetPlanesAddr(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal(err)
 	}
-	flightsConn, err := grpc.Dial("localhost:50052", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	flightsConn, err := grpc.Dial(appConfig.GetFlightsAddr(), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatal(err)
 	}
