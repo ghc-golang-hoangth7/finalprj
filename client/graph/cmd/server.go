@@ -7,8 +7,6 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/ghc-golang-hoangth7/finalprj/client/graph"
 	"github.com/ghc-golang-hoangth7/finalprj/common"
@@ -21,19 +19,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	planesConn, err := grpc.Dial(appConfig.GetPlanesAddr(), grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatal(err)
-	}
-	flightsConn, err := grpc.Dial(appConfig.GetFlightsAddr(), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	planesServiceClient, planesConn, err := pbPlanes.NewServiceClient(appConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer planesConn.Close()
-	defer flightsConn.Close()
 
-	planesServiceClient := pbPlanes.NewPlanesServiceClient(planesConn)
-	flightsServiceClient := pbFlights.NewFlightServiceClient(flightsConn)
+	flightsServiceClient, flightsConn, err := pbFlights.NewServiceClient(appConfig)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer flightsConn.Close()
 
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{
 		Resolvers: &graph.Resolver{

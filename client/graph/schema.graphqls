@@ -20,15 +20,15 @@ type PlaneList {
 input PlaneQuery {
   plane_id: String @validate(constraint: "uuid")
   plane_number: String @validate(constraint: "min=3,max=30")
-  total_seats_from: Int @validate(constraint: "min=30,max=300")
-  total_seats_to: Int @validate(constraint: "min=30,max=300")
+  total_seats_from: Int @validate(constraint: "min=30,max=400")
+  total_seats_to: Int @validate(constraint: "min=30,max=400")
   status: [String]
 }
 
 input PlaneInput {
   plane_id: String @validate(constraint: "uuid")
   plane_number: String! @validate(constraint: "min=3,max=30")
-  total_seats: Int! @validate(constraint: "min=30,max=300")
+  total_seats: Int! @validate(constraint: "min=30,max=400")
   status: String! @validate(constraint: "oneof='flying' 'cleaning' 'repairing' 'ready' 'deleted'")
 }
 
