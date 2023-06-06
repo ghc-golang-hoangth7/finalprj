@@ -4057,30 +4057,11 @@ func (ec *executionContext) unmarshalInputFlightInput(ctx context.Context, obj i
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalOString2ᚖstring(ctx, v) }
-			directive1 := func(ctx context.Context) (interface{}, error) {
-				constraint, err := ec.unmarshalNString2string(ctx, "uuid")
-				if err != nil {
-					return nil, err
-				}
-				if ec.directives.Validate == nil {
-					return nil, errors.New("directive validate is not implemented")
-				}
-				return ec.directives.Validate(ctx, obj, directive0, constraint)
-			}
-
-			tmp, err := directive1(ctx)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
-				return it, graphql.ErrorOnPath(ctx, err)
+				return it, err
 			}
-			if data, ok := tmp.(*string); ok {
-				it.ID = data
-			} else if tmp == nil {
-				it.ID = nil
-			} else {
-				err := fmt.Errorf(`unexpected type %T from directive, should be *string`, tmp)
-				return it, graphql.ErrorOnPath(ctx, err)
-			}
+			it.ID = data
 		case "plane_number":
 			var err error
 
@@ -4158,30 +4139,11 @@ func (ec *executionContext) unmarshalInputFlightQuery(ctx context.Context, obj i
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalOString2ᚖstring(ctx, v) }
-			directive1 := func(ctx context.Context) (interface{}, error) {
-				constraint, err := ec.unmarshalNString2string(ctx, "uuid")
-				if err != nil {
-					return nil, err
-				}
-				if ec.directives.Validate == nil {
-					return nil, errors.New("directive validate is not implemented")
-				}
-				return ec.directives.Validate(ctx, obj, directive0, constraint)
-			}
-
-			tmp, err := directive1(ctx)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
-				return it, graphql.ErrorOnPath(ctx, err)
+				return it, err
 			}
-			if data, ok := tmp.(*string); ok {
-				it.ID = data
-			} else if tmp == nil {
-				it.ID = nil
-			} else {
-				err := fmt.Errorf(`unexpected type %T from directive, should be *string`, tmp)
-				return it, graphql.ErrorOnPath(ctx, err)
-			}
+			it.ID = data
 		case "plane_number":
 			var err error
 
@@ -4415,30 +4377,11 @@ func (ec *executionContext) unmarshalInputPlaneInput(ctx context.Context, obj in
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plane_id"))
-			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalOString2ᚖstring(ctx, v) }
-			directive1 := func(ctx context.Context) (interface{}, error) {
-				constraint, err := ec.unmarshalNString2string(ctx, "uuid")
-				if err != nil {
-					return nil, err
-				}
-				if ec.directives.Validate == nil {
-					return nil, errors.New("directive validate is not implemented")
-				}
-				return ec.directives.Validate(ctx, obj, directive0, constraint)
-			}
-
-			tmp, err := directive1(ctx)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
-				return it, graphql.ErrorOnPath(ctx, err)
+				return it, err
 			}
-			if data, ok := tmp.(*string); ok {
-				it.PlaneID = data
-			} else if tmp == nil {
-				it.PlaneID = nil
-			} else {
-				err := fmt.Errorf(`unexpected type %T from directive, should be *string`, tmp)
-				return it, graphql.ErrorOnPath(ctx, err)
-			}
+			it.PlaneID = data
 		case "plane_number":
 			var err error
 
@@ -4471,7 +4414,7 @@ func (ec *executionContext) unmarshalInputPlaneInput(ctx context.Context, obj in
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("total_seats"))
 			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalNInt2int(ctx, v) }
 			directive1 := func(ctx context.Context) (interface{}, error) {
-				constraint, err := ec.unmarshalNString2string(ctx, "min=30,max=300")
+				constraint, err := ec.unmarshalNString2string(ctx, "min=30,max=400")
 				if err != nil {
 					return nil, err
 				}
@@ -4541,30 +4484,11 @@ func (ec *executionContext) unmarshalInputPlaneQuery(ctx context.Context, obj in
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("plane_id"))
-			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalOString2ᚖstring(ctx, v) }
-			directive1 := func(ctx context.Context) (interface{}, error) {
-				constraint, err := ec.unmarshalNString2string(ctx, "uuid")
-				if err != nil {
-					return nil, err
-				}
-				if ec.directives.Validate == nil {
-					return nil, errors.New("directive validate is not implemented")
-				}
-				return ec.directives.Validate(ctx, obj, directive0, constraint)
-			}
-
-			tmp, err := directive1(ctx)
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
-				return it, graphql.ErrorOnPath(ctx, err)
+				return it, err
 			}
-			if data, ok := tmp.(*string); ok {
-				it.PlaneID = data
-			} else if tmp == nil {
-				it.PlaneID = nil
-			} else {
-				err := fmt.Errorf(`unexpected type %T from directive, should be *string`, tmp)
-				return it, graphql.ErrorOnPath(ctx, err)
-			}
+			it.PlaneID = data
 		case "plane_number":
 			var err error
 
@@ -4599,7 +4523,7 @@ func (ec *executionContext) unmarshalInputPlaneQuery(ctx context.Context, obj in
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("total_seats_from"))
 			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalOInt2ᚖint(ctx, v) }
 			directive1 := func(ctx context.Context) (interface{}, error) {
-				constraint, err := ec.unmarshalNString2string(ctx, "min=30,max=300")
+				constraint, err := ec.unmarshalNString2string(ctx, "min=30,max=400")
 				if err != nil {
 					return nil, err
 				}
@@ -4627,7 +4551,7 @@ func (ec *executionContext) unmarshalInputPlaneQuery(ctx context.Context, obj in
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("total_seats_to"))
 			directive0 := func(ctx context.Context) (interface{}, error) { return ec.unmarshalOInt2ᚖint(ctx, v) }
 			directive1 := func(ctx context.Context) (interface{}, error) {
-				constraint, err := ec.unmarshalNString2string(ctx, "min=30,max=300")
+				constraint, err := ec.unmarshalNString2string(ctx, "min=30,max=400")
 				if err != nil {
 					return nil, err
 				}

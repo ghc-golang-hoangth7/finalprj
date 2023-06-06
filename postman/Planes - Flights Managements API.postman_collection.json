@@ -1,0 +1,752 @@
+{
+	"info": {
+		"_postman_id": "a5f81282-1232-47e0-8da2-d3e36289e7b8",
+		"name": "Planes - Flights Managements API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1560924"
+	},
+	"item": [
+		{
+			"name": "queries",
+			"item": [
+				{
+					"name": "getPlanesList",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetPlanesList {\n    getPlanesList(\n        plane: { status:[\"ready\", \"cleaning\"] }\n    ) {\n        planes {\n            plane_id\n            plane_number\n            total_seats\n            status\n        }\n    }\n}\n",
+								"variables": "{}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "getPlanesList",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query GetPlanesList {\n    getPlanesList(\n        plane: {}\n    ) {\n        planes {\n            plane_id\n            plane_number\n            total_seats\n            status\n        }\n    }\n}\n",
+										"variables": "{}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 Jun 2023 14:53:00 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1177"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"getPlanesList\": {\n            \"planes\": [\n                {\n                    \"plane_id\": \"8f72f081-d5cc-4bab-b821-8a8a06c6c5b2\",\n                    \"plane_number\": \"A123456\",\n                    \"total_seats\": 150,\n                    \"status\": \"ready\"\n                },\n                {\n                    \"plane_id\": \"de7a65f4-53f5-42d3-bc6c-e68e348a0397\",\n                    \"plane_number\": \"B234567\",\n                    \"total_seats\": 180,\n                    \"status\": \"flying\"\n                },\n                {\n                    \"plane_id\": \"ce5ca06b-031f-4ff2-928a-4952441e58e0\",\n                    \"plane_number\": \"C345678\",\n                    \"total_seats\": 230,\n                    \"status\": \"cleaning\"\n                },\n                {\n                    \"plane_id\": \"a3eb4a67-f5f6-4b9c-9fb8-ad1d67495d33\",\n                    \"plane_number\": \"D456789\",\n                    \"total_seats\": 160,\n                    \"status\": \"repairing\"\n                },\n                {\n                    \"plane_id\": \"fbb89d24-cea6-4763-b558-a58587b33fbc\",\n                    \"plane_number\": \"E567890\",\n                    \"total_seats\": 170,\n                    \"status\": \"deleted\"\n                },\n                {\n                    \"plane_id\": \"8f62872a-6033-4e10-8ca0-bd97363ba673\",\n                    \"plane_number\": \"F678901\",\n                    \"total_seats\": 180,\n                    \"status\": \"ready\"\n                },\n                {\n                    \"plane_id\": \"b52cd7c9-6a1b-49d3-a6d2-3b9663dcbc86\",\n                    \"plane_number\": \"G789012\",\n                    \"total_seats\": 250,\n                    \"status\": \"flying\"\n                },\n                {\n                    \"plane_id\": \"639e282d-7cfa-4ec5-8e8e-7a42070140f7\",\n                    \"plane_number\": \"H890123\",\n                    \"total_seats\": 270,\n                    \"status\": \"cleaning\"\n                },\n                {\n                    \"plane_id\": \"7ff6b191-37c3-4916-86b5-f95aa06042b6\",\n                    \"plane_number\": \"I901234\",\n                    \"total_seats\": 300,\n                    \"status\": \"repairing\"\n                },\n                {\n                    \"plane_id\": \"7cc788c4-c3c0-4b0b-9890-4936fa9b0187\",\n                    \"plane_number\": \"J012345\",\n                    \"total_seats\": 360,\n                    \"status\": \"ready\"\n                }\n            ]\n        }\n    }\n}"
+						},
+						{
+							"name": "getPlanesList",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query GetPlanesList {\n    getPlanesList(\n        plane: {total_seats_from: 200, total_seats_to: 300}\n    ) {\n        planes {\n            plane_id\n            plane_number\n            total_seats\n            status\n        }\n    }\n}\n",
+										"variables": "{}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 Jun 2023 14:54:24 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "498"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"getPlanesList\": {\n            \"planes\": [\n                {\n                    \"plane_id\": \"ce5ca06b-031f-4ff2-928a-4952441e58e0\",\n                    \"plane_number\": \"C345678\",\n                    \"total_seats\": 230,\n                    \"status\": \"cleaning\"\n                },\n                {\n                    \"plane_id\": \"b52cd7c9-6a1b-49d3-a6d2-3b9663dcbc86\",\n                    \"plane_number\": \"G789012\",\n                    \"total_seats\": 250,\n                    \"status\": \"flying\"\n                },\n                {\n                    \"plane_id\": \"639e282d-7cfa-4ec5-8e8e-7a42070140f7\",\n                    \"plane_number\": \"H890123\",\n                    \"total_seats\": 270,\n                    \"status\": \"cleaning\"\n                },\n                {\n                    \"plane_id\": \"7ff6b191-37c3-4916-86b5-f95aa06042b6\",\n                    \"plane_number\": \"I901234\",\n                    \"total_seats\": 300,\n                    \"status\": \"repairing\"\n                }\n            ]\n        }\n    }\n}"
+						},
+						{
+							"name": "getPlanesList",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query GetPlanesList {\n    getPlanesList(\n        plane: { status:[\"ready\", \"cleaning\"] }\n    ) {\n        planes {\n            plane_id\n            plane_number\n            total_seats\n            status\n        }\n    }\n}\n",
+										"variables": "{}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 Jun 2023 14:55:30 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "605"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"getPlanesList\": {\n            \"planes\": [\n                {\n                    \"plane_id\": \"8f72f081-d5cc-4bab-b821-8a8a06c6c5b2\",\n                    \"plane_number\": \"A123456\",\n                    \"total_seats\": 150,\n                    \"status\": \"ready\"\n                },\n                {\n                    \"plane_id\": \"ce5ca06b-031f-4ff2-928a-4952441e58e0\",\n                    \"plane_number\": \"C345678\",\n                    \"total_seats\": 230,\n                    \"status\": \"cleaning\"\n                },\n                {\n                    \"plane_id\": \"8f62872a-6033-4e10-8ca0-bd97363ba673\",\n                    \"plane_number\": \"F678901\",\n                    \"total_seats\": 180,\n                    \"status\": \"ready\"\n                },\n                {\n                    \"plane_id\": \"639e282d-7cfa-4ec5-8e8e-7a42070140f7\",\n                    \"plane_number\": \"H890123\",\n                    \"total_seats\": 270,\n                    \"status\": \"cleaning\"\n                },\n                {\n                    \"plane_id\": \"7cc788c4-c3c0-4b0b-9890-4936fa9b0187\",\n                    \"plane_number\": \"J012345\",\n                    \"total_seats\": 360,\n                    \"status\": \"ready\"\n                }\n            ]\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "getPlaneById",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query getPlaneById ($id: String!) {\n    getPlaneById (id: $id) {\n        plane_id\n        plane_number\n        total_seats\n        status\n    }\n}",
+								"variables": "{\n  \"id\": \"8f72f081-d5cc-4bab-b821-8a8a06c6c5b2\"\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "getPlaneById",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query getPlaneById ($id: String!) {\n    getPlaneById (id: $id) {\n        plane_id\n        plane_number\n        total_seats\n        status\n    }\n}",
+										"variables": "{\n  \"id\": \"8f72f081-d5cc-4bab-b821-8a8a06c6c5b2\"\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 Jun 2023 14:56:14 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "137"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"getPlaneById\": {\n            \"plane_id\": \"8f72f081-d5cc-4bab-b821-8a8a06c6c5b2\",\n            \"plane_number\": \"A123456\",\n            \"total_seats\": 150,\n            \"status\": \"ready\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "getFlightsList",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query GetFlightsList {\n    getFlightsList(\n        flight: {scheduled_departure_time_from: \"2023-07-01T09:00:00Z\", scheduled_departure_time_to: \"2023-07-03T19:00:00Z\", status: [\"scheduled\"], available_seats_from: 150}\n    ) {\n        flights {\n            id\n            plane_number\n            departure_point\n            destination_point\n            scheduled_departure_time\n            estimated_arrival_time\n            real_departure_time\n            real_arrival_time\n            status\n            available_seats\n        }\n    }\n}\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "getFlightsList",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query GetFlightsList {\n    getFlightsList(\n        flight: {}\n    ) {\n        flights {\n            id\n            plane_number\n            departure_point\n            destination_point\n            scheduled_departure_time\n            estimated_arrival_time\n            real_departure_time\n            real_arrival_time\n            status\n            available_seats\n        }\n    }\n}\n",
+										"variables": ""
+									}
+								},
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 Jun 2023 15:14:41 GMT"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"getFlightsList\": {\n            \"flights\": [\n                {\n                    \"id\": \"17c48777-56c2-4a87-9c1a-b347c0b7879a\",\n                    \"plane_number\": \"A123456\",\n                    \"departure_point\": \"New York\",\n                    \"destination_point\": \"London\",\n                    \"scheduled_departure_time\": \"2023-07-01T09:00:00Z\",\n                    \"estimated_arrival_time\": \"2023-07-01T12:00:00Z\",\n                    \"real_departure_time\": null,\n                    \"real_arrival_time\": null,\n                    \"status\": \"scheduled\",\n                    \"available_seats\": 140\n                },\n                {\n                    \"id\": \"f6dcbe35-e352-4b49-a17f-227c563de15c\",\n                    \"plane_number\": \"A123456\",\n                    \"departure_point\": \"London\",\n                    \"destination_point\": \"New York\",\n                    \"scheduled_departure_time\": \"2023-07-02T12:00:00Z\",\n                    \"estimated_arrival_time\": \"2023-07-02T15:00:00Z\",\n                    \"real_departure_time\": null,\n                    \"real_arrival_time\": null,\n                    \"status\": \"scheduled\",\n                    \"available_seats\": 140\n                },\n                {\n                    \"id\": \"c55d0fb9-2a5b-4b77-8dd4-0ac89c1b3103\",\n                    \"plane_number\": \"B234567\",\n                    \"departure_point\": \"Paris\",\n                    \"destination_point\": \"Rome\",\n                    \"scheduled_departure_time\": \"2023-07-03T09:00:00Z\",\n                    \"estimated_arrival_time\": \"2023-07-03T12:00:00Z\",\n                    \"real_departure_time\": null,\n                    \"real_arrival_time\": null,\n                    \"status\": \"scheduled\",\n                    \"available_seats\": 170\n                },\n                {\n                    \"id\": \"2c9aea25-3d50-4dfc-bca6-540bc4b21f08\",\n                    \"plane_number\": \"B234567\",\n                    \"departure_point\": \"Rome\",\n                    \"destination_point\": \"Paris\",\n                    \"scheduled_departure_time\": \"2023-07-04T12:00:00Z\",\n                    \"estimated_arrival_time\": \"2023-07-04T15:00:00Z\",\n                    \"real_departure_time\": null,\n                    \"real_arrival_time\": null,\n                    \"status\": \"scheduled\",\n                    \"available_seats\": 170\n                },\n                {\n                    \"id\": \"677f6314-6683-41f3-b144-e471c39d1be1\",\n                    \"plane_number\": \"C345678\",\n                    \"departure_point\": \"Berlin\",\n                    \"destination_point\": \"Amsterdam\",\n                    \"scheduled_departure_time\": \"2023-07-05T09:00:00Z\",\n                    \"estimated_arrival_time\": \"2023-07-05T12:00:00Z\",\n                    \"real_departure_time\": null,\n                    \"real_arrival_time\": null,\n                    \"status\": \"scheduled\",\n                    \"available_seats\": 220\n                },\n                {\n                    \"id\": \"f62ebd7a-a9ce-4833-b08d-77b3150a75f6\",\n                    \"plane_number\": \"C345678\",\n                    \"departure_point\": \"Amsterdam\",\n                    \"destination_point\": \"Berlin\",\n                    \"scheduled_departure_time\": \"2023-07-06T12:00:00Z\",\n                    \"estimated_arrival_time\": \"2023-07-06T15:00:00Z\",\n                    \"real_departure_time\": null,\n                    \"real_arrival_time\": null,\n                    \"status\": \"scheduled\",\n                    \"available_seats\": 220\n                },\n                {\n                    \"id\": \"45af00a0-a27b-4622-8c9e-cb1dfd3be79c\",\n                    \"plane_number\": \"D456789\",\n                    \"departure_point\": \"Tokyo\",\n                    \"destination_point\": \"Shanghai\",\n                    \"scheduled_departure_time\": \"2023-07-07T09:00:00Z\",\n                    \"estimated_arrival_time\": \"2023-07-07T12:00:00Z\",\n                    \"real_departure_time\": null,\n                    \"real_arrival_time\": null,\n                    \"status\": \"scheduled\",\n                    \"available_seats\": 150\n                },\n                {\n                    \"id\": \"6afb6ac7-9591-4ac4-bcd1-515cb0c6e4d5\",\n                    \"plane_number\": \"D456789\",\n                    \"departure_point\": \"Shanghai\",\n                    \"destination_point\": \"Tokyo\",\n                    \"scheduled_departure_time\": \"2023-07-08T12:00:00Z\",\n                    \"estimated_arrival_time\": \"2023-07-08T15:00:00Z\",\n                    \"real_departure_time\": null,\n                    \"real_arrival_time\": null,\n                    \"status\": \"scheduled\",\n                    \"available_seats\": 150\n                }\n            ]\n        }\n    }\n}"
+						},
+						{
+							"name": "getFlightsList",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query GetFlightsList {\n    getFlightsList(\n        flight: {scheduled_departure_time_from: \"2023-07-01T09:00:00Z\", scheduled_departure_time_to: \"2023-07-03T19:00:00Z\", status: [\"scheduled\"], available_seats_from: 150}\n    ) {\n        flights {\n            id\n            plane_number\n            departure_point\n            destination_point\n            scheduled_departure_time\n            estimated_arrival_time\n            real_departure_time\n            real_arrival_time\n            status\n            available_seats\n        }\n    }\n}\n",
+										"variables": ""
+									}
+								},
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 Jun 2023 15:17:39 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "358"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"getFlightsList\": {\n            \"flights\": [\n                {\n                    \"id\": \"c55d0fb9-2a5b-4b77-8dd4-0ac89c1b3103\",\n                    \"plane_number\": \"B234567\",\n                    \"departure_point\": \"Paris\",\n                    \"destination_point\": \"Rome\",\n                    \"scheduled_departure_time\": \"2023-07-03T09:00:00Z\",\n                    \"estimated_arrival_time\": \"2023-07-03T12:00:00Z\",\n                    \"real_departure_time\": null,\n                    \"real_arrival_time\": null,\n                    \"status\": \"scheduled\",\n                    \"available_seats\": 170\n                }\n            ]\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "getFlightById",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query getFlightById ($id: String!) {\n    getFlightById (id: $id) {\n        id\n        plane_number\n        departure_point\n        destination_point\n        scheduled_departure_time\n        estimated_arrival_time\n        real_departure_time\n        real_arrival_time\n        status\n        available_seats\n    }\n}",
+								"variables": "{\n  \"id\": \"c55d0fb9-2a5b-4b77-8dd4-0ac89c1b3103\"\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "getFlightById",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query getFlightById ($id: String!) {\n    getFlightById (id: $id) {\n        id\n        plane_number\n        departure_point\n        destination_point\n        scheduled_departure_time\n        estimated_arrival_time\n        real_departure_time\n        real_arrival_time\n        status\n        available_seats\n    }\n}",
+										"variables": "{\n  \"id\": \"c55d0fb9-2a5b-4b77-8dd4-0ac89c1b3103\"\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 Jun 2023 15:18:00 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "343"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"getFlightById\": {\n            \"id\": \"c55d0fb9-2a5b-4b77-8dd4-0ac89c1b3103\",\n            \"plane_number\": \"B234567\",\n            \"departure_point\": \"Paris\",\n            \"destination_point\": \"Rome\",\n            \"scheduled_departure_time\": \"2023-07-03T09:00:00Z\",\n            \"estimated_arrival_time\": \"2023-07-03T12:00:00Z\",\n            \"real_departure_time\": null,\n            \"real_arrival_time\": null,\n            \"status\": \"scheduled\",\n            \"available_seats\": 170\n        }\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "mutations",
+			"item": [
+				{
+					"name": "upsertPlane",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation upsertPlane ($plane: PlaneInput!) {\n    upsertPlane (plane: $plane) {\n        id\n    }\n}",
+								"variables": "{\n  \"plane\": {\n    \"plane_id\": \"\",\n    \"plane_number\": \"HoangTH7\",\n    \"total_seats\": 100,\n    \"status\": \"ready\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "upsertPlane",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation upsertPlane ($plane: PlaneInput!) {\n    upsertPlane (plane: $plane) {\n        id\n    }\n}",
+										"variables": "{\n  \"plane\": {\n    \"plane_id\": \"\",\n    \"plane_number\": \"HoangTH7\",\n    \"total_seats\": 100,\n    \"status\": \"ready\"\n  }\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 Jun 2023 15:25:55 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "70"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"upsertPlane\": {\n            \"id\": \"70a1968c-5b6b-4d55-950d-4fb56543642f\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "changePlaneStatus",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation changePlaneStatus ($input: PlaneStatusInput!) {\n    changePlaneStatus (input: $input)\n}",
+								"variables": "{\n  \"input\": {\n    \"plane_id\": \"70a1968c-5b6b-4d55-950d-4fb56543642f\",\n    \"status\": \"cleaning\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "changePlaneStatus",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation changePlaneStatus ($input: PlaneStatusInput!) {\n    changePlaneStatus (input: $input)\n}",
+										"variables": "{\n  \"input\": {\n    \"plane_id\": \"70a1968c-5b6b-4d55-950d-4fb56543642f\",\n    \"status\": \"cleaning\"\n  }\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 Jun 2023 15:28:44 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "35"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"changePlaneStatus\": true\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "upsertFlight",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation upsertFlight ($flight: FlightInput!) {\n    upsertFlight (flight: $flight) {\n        id\n    }\n}",
+								"variables": "{\n  \"flight\": {\n    \"id\": \"\",\n    \"plane_number\": \"HoangTH7\",\n    \"departure_point\": \"F-Town3\",\n    \"destination_point\": \"Fville\",\n    \"scheduled_departure_time\": \"2023-08-05T09:00:00Z\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "upsertFlight",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation upsertFlight ($flight: FlightInput!) {\n    upsertFlight (flight: $flight) {\n        id\n    }\n}",
+										"variables": "{\n  \"flight\": {\n    \"id\": \"\",\n    \"plane_number\": \"HoangTH7\",\n    \"departure_point\": \"F-Town3\",\n    \"destination_point\": \"Fville\",\n    \"scheduled_departure_time\": \"2023-08-05T09:00:00Z\"\n  }\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 Jun 2023 15:28:12 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "71"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"upsertFlight\": {\n            \"id\": \"a4affbd5-c02a-4003-a7dd-704b9cc38f0b\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "changeFlightStatus",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation changeFlightStatus ($input: FlightStatusInput!) {\n    changeFlightStatus (input: $input)\n}",
+								"variables": "{\n  \"input\": {\n    \"flight_id\": \"a4affbd5-c02a-4003-a7dd-704b9cc38f0b\",\n    \"status\": \"canceled\"\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "changeFlightStatus",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation changeFlightStatus ($input: FlightStatusInput!) {\n    changeFlightStatus (input: $input)\n}",
+										"variables": "{\n  \"input\": {\n    \"flight_id\": \"a4affbd5-c02a-4003-a7dd-704b9cc38f0b\",\n    \"status\": \"canceled\"\n  }\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 Jun 2023 15:31:52 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "36"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"changeFlightStatus\": true\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "bookFlight",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation bookFlight ($input: BookFlightInput!) {\n    bookFlight (input: $input)\n}",
+								"variables": "{\n  \"input\": {\n    \"flight_id\": \"a4affbd5-c02a-4003-a7dd-704b9cc38f0b\",\n    \"number_of_seats\": -1\n  }\n}"
+							}
+						},
+						"url": {
+							"raw": "{{url}}",
+							"host": [
+								"{{url}}"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "bookFlight",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation bookFlight ($input: BookFlightInput!) {\n    bookFlight (input: $input)\n}",
+										"variables": "{\n  \"input\": {\n    \"flight_id\": \"a4affbd5-c02a-4003-a7dd-704b9cc38f0b\",\n    \"number_of_seats\": 2\n  }\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 Jun 2023 15:30:28 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "28"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"bookFlight\": true\n    }\n}"
+						},
+						{
+							"name": "bookFlight",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation bookFlight ($input: BookFlightInput!) {\n    bookFlight (input: $input)\n}",
+										"variables": "{\n  \"input\": {\n    \"flight_id\": \"a4affbd5-c02a-4003-a7dd-704b9cc38f0b\",\n    \"number_of_seats\": -1\n  }\n}"
+									}
+								},
+								"url": {
+									"raw": "{{url}}",
+									"host": [
+										"{{url}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 06 Jun 2023 15:31:18 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "123"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"errors\": [\n        {\n            \"message\": \"number_of_seats must be 1 or greater\",\n            \"path\": [\n                \"bookFlight\",\n                \"input\",\n                \"number_of_seats\"\n            ]\n        }\n    ],\n    \"data\": null\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "http://localhost:8080/query",
+			"type": "any"
+		}
+	]
+}

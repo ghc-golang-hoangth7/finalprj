@@ -168,8 +168,8 @@ func (s *FlightService) BookFlight(ctx context.Context, req *pb.BookFlightReques
 	}
 
 	// Check if there are available seats
-	if flight.AvailableSeats == 0 {
-		return &emptypb.Empty{}, status.Errorf(codes.FailedPrecondition, "flight is fully booked")
+	if flight.AvailableSeats < int(req.NumberOfSeats) {
+		return &emptypb.Empty{}, status.Errorf(codes.FailedPrecondition, "not enough available seats")
 	}
 
 	// Check if the departure time is at least 45 minutes from now
